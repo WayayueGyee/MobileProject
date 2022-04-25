@@ -1,0 +1,4 @@
+export default {
+  SAVE_COLOR: "SAVE_COLOR",
+  SAVE_VARIABLE: "SAVE_VARIABLE"
+}
