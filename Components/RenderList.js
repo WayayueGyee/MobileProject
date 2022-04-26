@@ -1,7 +1,8 @@
 import React  from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
-import { VarBlock } from "./VarBlock";
+import { FunctionBlock } from "./FunctionBlock";
+import {DeclareBlock} from "./DeclareBlock";
 
 export const RenderList = () => {
   const data = useSelector(state => state.addBlockReducer);
@@ -9,13 +10,21 @@ export const RenderList = () => {
   return (
     <View style={styles.view}>
       {
-        Object.values(data.blockArray).map((item) => {
+        Object.values(data.functionBlocks).map((item) => {
         switch (item.type) {
-          case 'variable': {
+          case 'function': {
             return (
               <>
                 <Text>{item.id}</Text>
-                <VarBlock key={item.id} id={item.id}/>
+                <FunctionBlock key={item.id} id={item.id}/>
+              </>
+            )
+          }
+
+          case 'variable': {
+            return (
+                <>
+              <DeclareBlock key={item.id} id={item.id}/>
               </>
             )
           }

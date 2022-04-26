@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { VariableInput } from "./VariableInput";
+import { FunctionInput } from "./FunctionInput";
 import { AddValueInputAction } from "../redux/Actions/AddValueInputAction";
 
-export const VarBlock = (props) => {
+export const FunctionBlock = (props) => {
   const dispatch = useDispatch();
   const data = useSelector(state => state.addBlockReducer);
   const [count, setCount] = useState(2);
@@ -20,9 +20,9 @@ export const VarBlock = (props) => {
         <Text style={styles.text}>Variable</Text>
         <View style={styles.inputView}>
           <TextInput blockId={props.id} style={styles.inputFirst} placeholder={"variable name"}/>
-          {Object.values(data.blockArray[props.id].value).map((item) => {
+          {Object.values(data.functionBlocks[props.id].content.value).map((item) => {
             return (
-              <VariableInput id={props.id} count={item.valueId}/>
+              <FunctionInput id={props.id} count={item.valueId}/>
             )
           })}
           <TouchableOpacity style={styles.button}

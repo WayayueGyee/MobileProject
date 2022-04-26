@@ -7,8 +7,8 @@ export const BlocksList = () => {
   const [show, setShow] = useState(false);
   const dispatch = useDispatch()
 
-  const onPressEvent = (id, type) => {
-    dispatch(addBlockAction({id: id, type: type, count: 1}))
+  const onPressEvent = (id, type, blockType) => {
+    dispatch(addBlockAction({id: id, type: type, blockType: blockType,  count: 1}))
   }
 
   return (
@@ -19,12 +19,12 @@ export const BlocksList = () => {
       {show &&
         <FlatList
           data={[
-            {type: 'variable'},
+            {type: 'variable', block: 'declareBlocks'},
             {type: 'operation'},
-            {type: 'function'}
+            {type: 'function', block: 'functionBlocks'}
           ]}
           renderItem={({item}) => (
-              <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type)} style={styles.button}>
+              <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type, item.block)} style={styles.button}>
                 <Text style={styles.text}>{item.type}</Text>
               </TouchableOpacity>
             )
