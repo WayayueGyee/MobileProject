@@ -1,0 +1,39 @@
+    "content"
+If block containt another blocks, they are placed in "content".
+Every block knows how to use that blocks or has metaData for that.
+
+    "name"
+Main identifier name.
+
+    "value"
+A payload of value returnable block
+
+    "nameSeq"
+Sequence of "name" tags
+
+        "type":
+    "declare"
+"content"[0]: initialize block (return value needed);
+
+    "invoker"
+"content"[0..n?]: function arguments;
+
+    "function"
+"nameSeq"[0..n?]: identifiers for arguments;
+"content"[0..n?]: any blocks;
+
+    "expression"
+"value": text, that can be parsed and calculated 
+
+    "text"
+"value": text
+
+    "deref"
+"name": identifier to de dereferenced 
+
+    "return"
+"content"[0]: returnable block presents result of the function;
+     
+    "break" - empty
+
+This scheme allows navigate through program using array of indexes  

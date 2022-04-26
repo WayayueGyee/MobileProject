@@ -1,0 +1,47 @@
+{ "type": "program", "content": [
+        {
+            "type": "function", "name": "main", "nameSeq": ["a", "b"],
+            "content": [
+                {
+                    "type": "declare", "name": "variable",
+                    "content": [
+                        { "type": "text", "value": "value" }
+                    ]
+                },
+                {
+                    "type": "declare", "name": "fooRes",
+                    "content": [
+                        {
+                            "type": "invoker", "name": "foo",
+                            "content": [
+                                { "type": "expression", "value": "1" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "declare", "name": "globalOne",
+            "content": [
+                { "type": "text", "value": "globalValue" }
+            ]
+        },
+        {
+            "type": "function", "name": "foo", "nameSeq": ["a"],
+            "content": [
+                {
+                    "type": "declare", "name": "variable",
+                    "content": [
+                        { "type": "expression", "value": "a + globalOne" }
+                    ]
+                },
+                {
+                    "type": "return", "content": [
+                        { "type": "deref", "name": "variable" }
+                    ]
+                }
+            ]
+        }
+    ]
+}
