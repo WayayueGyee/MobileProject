@@ -4,7 +4,7 @@ export const addBlockAction = (data) => {
   return {
     type: constants.SAVE_VARIABLE,
     payload: {
-      type: data.type, name: data.name, value: data.value
+      id: data.id, type: data.type, name: '', value: {[data.count]: {id: data.id, valueId: data.count, value: ''}}
     }
   }
 }

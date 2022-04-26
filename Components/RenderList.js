@@ -1,5 +1,5 @@
 import React  from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import { VarBlock } from "./VarBlock";
 
@@ -8,11 +8,15 @@ export const RenderList = () => {
 
   return (
     <View style={styles.view}>
-      {data.blockArray.map((item) => {
+      {
+        Object.values(data.blockArray).map((item) => {
         switch (item.type) {
           case 'variable': {
             return (
-              <VarBlock/>
+              <>
+                <Text>{item.id}</Text>
+                <VarBlock key={item.id} id={item.id}/>
+              </>
             )
           }
         }
@@ -28,6 +32,7 @@ const styles = StyleSheet.create({
   },
 
   text: {
+    color: '#000',
     fontSize: 18
   }
 })
