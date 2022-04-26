@@ -13,15 +13,18 @@ export default class Program extends Block
 
     constructor() {
         super();
+        this.index = -1;
         this.globalEnv = new Environment(this);
     }
 
     useGlobalVariable(declarator: DeclareBlock) {
+        this.pushToContent(declarator);
         declarator.execute(this.globalEnv)
         return this;
     }
 
     useFunction(name: string, funcBlock: FuncBlock) {
+        this.pushToContent(funcBlock);
         this.globalEnv.create(name, new Value(TypeNames.FUNCKBLOCK, funcBlock))
         return this;
     }
@@ -33,6 +36,7 @@ export default class Program extends Block
         } catch(e) {
             RuntimeError.throwIdentifierError(env, "Symbol 'main' must be defined as a function");
         }
+        env.curBlock = main;
         return main.execute(env);
     }
 

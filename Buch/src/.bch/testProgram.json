@@ -5,7 +5,7 @@
                 {
                     "type": "declare", "name": "variable",
                     "content": [
-                        { "type": "text", "value": "value" }
+                        { "type": "text", "value": "value123" }
                     ]
                 },
                 {

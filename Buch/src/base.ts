@@ -126,6 +126,9 @@ export abstract class Block
         env.curBlock = this;
         const result = this.logicsBody(env);
         env.curBlock = prevBlock;
+
+        console.log("Executed ", this._id, this.constructor, " result ", result);
+        
         return result;
     }
 
@@ -175,10 +178,11 @@ export abstract class ContainerBlock extends ScopeBlock
     }
 
     protected logicsBody(env: Environment): Value {
-        console.log("\tInto container ", this._id);
+        console.log("\t\tInto container ", this._id);
 
         for (let i = 0; i < this.container.length; ++i) {
-            console.log("Exec : ", this.container[i]._id);
+            console.log("\tExec : ", this.container[i]._id);
+            
             this.container[i].execute(env);
             if (env.signal.type !== SignalTypes.NULL) break;
         }
