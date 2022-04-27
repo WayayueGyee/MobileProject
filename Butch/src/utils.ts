@@ -15,10 +15,13 @@ export function indexCodeNames(codeNames: string[]) {
     return obj;
 }
 
-export function createBuchCodesFile(pathToCodesSet: string, outPath: string) {
+export function createButchCodesFile(pathToCodesSet: string, outPath: string) {
     const data = fs.readFileSync(pathToCodesSet).toString();
     let codeNames = data.split(/\s*\n+\s*/);
     let indexed = indexCodeNames(codeNames);
     
-    fs.writeFileSync(_path.join(outPath, "BuchCodes.json"), JSON.stringify(indexed));
+    fs.writeFileSync(_path.join(outPath, "ButchCodes.json"), JSON.stringify(indexed));
 }
+
+export const readButchCodesFile = (pathToButchCodes: string): {[key: string]: string} => 
+    JSON.parse(fs.readFileSync(pathToButchCodes).toString());

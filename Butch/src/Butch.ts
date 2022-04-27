@@ -1,8 +1,9 @@
 import { FuncBlock, Block, Environment, Value, TypeNames } from "./base.js"
 import { BreakBlock, DeclareBlock, ExpressionBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock } from "./blocks.js";
 import { RuntimeError, CompilationError } from "./errors.js"; 
-import { createBuchCodesFile } from "./utils.js";
+import { createButchCodesFile } from "./utils.js";
 import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch.js"
+import ButchObj from "./ButchObj.js";
 
 import * as fs from "fs"
 import _path from "path"
@@ -45,46 +46,20 @@ export default class Program extends Block
     }
 }
 
-export type BuchObj = {
-    [key: string]: any
-}
+// export type ButchObj = {
+//     [key: string]: any
+// }
 
-// some named BuchObj types, used for example
-export type _Declare = {
-    type: "declare",
-    name: string,
-    content: BuchObj[1]
-}
-export type _Invoker = {
-    type: "invoker",
-    name: string,
-    content: BuchObj[]
-}
+export type BlockInfo = {obj: ButchObj, location: number[]};
 
-/**
- * recursive BuchObj finder 
- */
-export function goToNode(obj: BuchObj, path: number[],
-    codes: {[key: string]: string}) : BuchObj | undefined 
-{
-    let node = obj;
-    for (let i = 0; i < path.length; ++i) {
-        if (!node[codes.content]) return undefined;
-        node = node[codes.content][path[i]];
-    }
-    return node
-}
-
-export type BlockInfo = {obj: BuchObj, location: number[]};
-
-export type Middleware = (info: BlockInfo, codes: {[key: string]: string}, app: BuchBuilder) => void;
+export type Middleware = (info: BlockInfo, app: ButchBuilder) => void;
 
 type Builder = (info: BlockInfo) => Block;
 
 export type ExBuilder = (info: BlockInfo, codes: {[key: string]: string}, 
-    app: BuchBuilder) => Block;
+    app: ButchBuilder) => Block;
     
-export class BuchBuilder
+export class ButchBuilder
 {
     static unknownBlockError: Error = new Error("Unknown block type to build");
 
@@ -94,10 +69,8 @@ export class BuchBuilder
     private exBuilders: Map<string, ExBuilder>;
     private middlewares: Middleware[];
 
-    constructor(pathToBuchCodes: string) {
-        this.c = JSON.parse(
-            fs.readFileSync(pathToBuchCodes).toString());
-
+    constructor(codes: {[key: string]: string}) {
+        this.c = codes;
         // bind default builders
         this.builders = new Map<string, Builder>([
             [this.c.invoker, this.buildInvoker],
@@ -105,11 +78,11 @@ export class BuchBuilder
             [this.c.function, this.buildFunction],
             
             // style 2 builder : inline anonymos
-            [this.c.expression, info => new ExpressionBlock(info.obj.value)],
-            [this.c.text, info => new TextBlock(info.obj[this.c.value])],
-            [this.c.deref, info => new _dereferenceBlock(info.obj[this.c.name])],
+            [this.c.expression, info => new ExpressionBlock(info.obj.get("value"))],
+            [this.c.text, info => new TextBlock(info.obj.get("value"))],
+            [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
-            [this.c.return, info => new ReturnBlock(info.obj.builtContent[0])]
+            [this.c.return, info => new ReturnBlock(info.obj.extention.builtContent[0])]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();
@@ -117,7 +90,7 @@ export class BuchBuilder
     }
 
     useBuilder(type: string, builder: ExBuilder) {
-        if (!this.c[type]) throw BuchBuilder.unknownBlockError;
+        if (!this.c[type]) throw ButchBuilder.unknownBlockError;
         this.exBuilders.set(this.c[type], builder);
     }
 
@@ -130,16 +103,16 @@ export class BuchBuilder
         this.middlewares.push(middleware);
     }
 
-    saveBuchCodes(pathToBuchDir: string) {
+    saveButchCodes(pathToButchDir: string) {
         const keys = Object.keys(this.c)
         let codesSet: string = keys[0];
         for (let i = 1; i < keys.length; ++i) {
             codesSet += "\n" + keys[i];
         }
 
-        const pathToCodesSet = _path.join(pathToBuchDir, "BuchCodesSet.txt");
+        const pathToCodesSet = _path.join(pathToButchDir, "ButchCodesSet.txt");
         fs.writeFile(pathToCodesSet, codesSet, () => {
-            createBuchCodesFile(pathToCodesSet, pathToBuchDir);
+            createButchCodesFile(pathToCodesSet, pathToButchDir);
         });
     }
 
@@ -166,53 +139,57 @@ export class BuchBuilder
 
     private execMiddlewares(info: BlockInfo) {
         for (let i = 0; i < this.middlewares.length; ++i) {
-            this.middlewares[i](info, this.c, this);
+            this.middlewares[i](info, this);
         }
     }
 
     // style 1 of builder : private prorety 
     private buildDeclare = (info: BlockInfo): DeclareBlock => {
-        return new DeclareBlock(info.obj[this.c.name], info.obj.builtContent[0]);
+        return new DeclareBlock(info.obj.get("name"), info.obj.extention.builtContent[0]);
     }
 
     private buildInvoker: Builder = (info: BlockInfo): Block => {
-        return new InvokeBlock(info.obj[this.c.name], info.obj.builtContent);
+        return new InvokeBlock(info.obj.get("name"), info.obj.extention.builtContent);
     }
 
     private buildFunction = (info: BlockInfo): FuncBlock => {
-        return new FuncBlock(info.obj.builtContent, info.obj[this.c.nameSeq]);
+        return new FuncBlock(info.obj.extention.builtContent, info.obj.get("nameSeq"));
     }
 
     buildBlock(info: BlockInfo, useMiddlewares: boolean = true): Block {
         if (useMiddlewares) this.execMiddlewares(info);
         
-        let builder = this.exBuilders.get(info.obj[this.c.type]);
+        let builder = this.exBuilders.get(info.obj.get("type"));
         if (builder) {
             return builder(info, this.c, this);
         } else {
-            let builder = this.builders.get(info.obj[this.c.type]);
-            if (builder)
-                return builder(info); 
+            let builder = this.builders.get(info.obj.get("type"));
+            if (builder) return builder(info); 
         }
-        CompilationError.throwUnknownBlock(info, this.c);
+        CompilationError.throwUnknownBlock(info);
     }
 
-    build(programObj: BuchObj): Program {
+    build(programObj: ButchObj): Program {
         const prog = new Program(); 
-        const content = programObj[this.c.content];
+        const content = programObj.content();
 
         for (let i = 0; i < content.length; ++i) {
-            const info = {obj: content[i], location: [i]};
+            const info: BlockInfo = 
+                {obj: new ButchObj(content[i], this.c), location: [i]};
+
             this.execMiddlewares(info);
 
             switch (content[i][this.c.type]) {
                 case this.c.function:
-                    prog.useFunction(content[i][this.c.name], 
-                        this.buildFunction({obj: content[i], location: [i]}));
+                    prog.useFunction(content[i][this.c.name], this.buildFunction(info));
                     break;
                 
                 case this.c.declare:
                     prog.useGlobalVariable(this.buildDeclare(info));
+                    break;
+
+                default:
+                    CompilationError.throwUnknownBlock(info);
             }
         }
         return prog;

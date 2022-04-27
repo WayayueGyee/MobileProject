@@ -1,12 +1,14 @@
 import { FuncBlock, Environment, Block } from "./base.js"
 import { DeclareBlock, InvokeBlock, TextBlock, _dereferenceBlock } from "./blocks.js"
-import * as Buch from "./Buch.js"
+import * as Butch from "./Butch.js"
 import * as fs from "fs"
-import { createBuchCodesFile } from "./utils.js"
+import { createButchCodesFile, readButchCodesFile } from "./utils.js"
+import ButchObj from "./ButchObj.js"
 
-createBuchCodesFile("./.bch/BuchCodesSet.txt", "./.bch/");
+createButchCodesFile("./.bch/ButchCodesSet.txt", "./.bch/");
 
-const builder = new Buch.BuchBuilder("./.bch/BuchCodes.json");
+const codes = readButchCodesFile("./.bch/ButchCodes.json")
+const builder = new Butch.ButchBuilder(codes);
 
 builder.encodeNamedProgram("./.bch/testProgram.json", () => {
     console.log("encoded");
@@ -16,7 +18,7 @@ builder.encodeNamedProgram("./.bch/testProgram.json", () => {
     
     console.log(obj);
     
-    const program = builder.build(obj)
+    const program = builder.build(new ButchObj(obj, codes))
     
     console.log(program);
 

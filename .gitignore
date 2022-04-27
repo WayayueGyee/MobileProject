@@ -60,5 +60,5 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-/Buch/build/
-/Buch/node_modules/
+/Butch/build/
+/Butch/node_modules/

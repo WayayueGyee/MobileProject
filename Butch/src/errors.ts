@@ -1,5 +1,5 @@
 import { Environment, Block } from "./base.js"
-import * as Bch from "./Buch.js"
+import * as Bch from "./Butch.js"
 
 export class RuntimeError extends Error
 {
@@ -60,17 +60,17 @@ export class CompilationError extends Error
 
     constructor(message: string, info: Bch.BlockInfo | undefined = undefined) {
         if (info) {
-            message += ` in Block ${JSON.stringify(info.obj, null, 4)}, located in [${info.location}]`;
+            message += ` in Block ${JSON.stringify(info.obj.data, null, 4)}, located in [${info.location}]`;
         }
         super(message);
         this.errorLocation = (info ? info.location : []);
     }
 
-    static throwSyntax(info: Bch.BlockInfo, codes: {[key: string]: string}): never {
+    static throwSyntax(info: Bch.BlockInfo): never {
         throw new CompilationError("Invalid syntax", info);  
     }
 
-    static throwUnknownBlock(info: Bch.BlockInfo, codes: {[key: string]: string}): never {
+    static throwUnknownBlock(info: Bch.BlockInfo): never {
         throw new CompilationError("Unknown Block", info);  
     }
 }
