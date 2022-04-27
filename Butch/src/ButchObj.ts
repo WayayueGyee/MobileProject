@@ -1,14 +1,14 @@
 /**
  * wraper of encoded object
- * allows  
+ * gives easier interaction with it
  */
 export default class ButchObj
 {
-    public data: any;
+    public data: {[key: string]: any};
     public codes: {[key: string]: string};
     public extention: {[key: string]: any} = {};
 
-    constructor(obj: any, codes: {[key: string]: string}) {
+    constructor(obj: {[key: string]: any}, codes: {[key: string]: string}) {
         this.codes = codes;
         this.data = obj;
     }
@@ -17,7 +17,7 @@ export default class ButchObj
     * recursive ButchObj finder 
     */
     static goToNode(obj: {[key: string]: any}, path: number[],
-       codes: {[key: string]: string}) : {[key: string]: any} | undefined 
+       codes: {[key: string]: string}) : {[key: string]: any} | undefined   
     {
         let node = obj;
         for (let i = 0; i < path.length; ++i) {
@@ -39,8 +39,11 @@ export default class ButchObj
         this.data[this.codes[key]] = value;
     }
 
-    goTo(...indexes: number[]): ButchObj | undefined {
+    goTo(...indexes: number[]): ButchObj {
         const obj = ButchObj.goToNode(this.data, indexes, this.codes)
-        return obj ? new ButchObj(obj, this.codes) : undefined;
+        if (!obj) {
+            throw Error("Invalid path to find block")
+        }
+        return new ButchObj(obj, this.codes);
     }
 }

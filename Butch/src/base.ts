@@ -92,7 +92,7 @@ export class Environment
 
     get(name: string): Value {
         let value = this.find(name) ?? RuntimeError.throwUndefinedError(this, name);
-        return value ?? Value.Undefined;
+        return value;
     }
 
     create(name: string, value: Value) {
@@ -133,7 +133,7 @@ export abstract class Block
     }
 
     public getContent(): Block[] {
-        return this.content;
+        return [...this.content];
     }
 
     public setContent(content: Block[]) {
@@ -169,21 +169,22 @@ export abstract class ScopeBlock extends Block
 
 export abstract class ContainerBlock extends ScopeBlock
 {
-    protected container: Block[];
+    protected containerIndexes: number[];
 
     constructor(internalBlocks: Array<Block> = []) {
         super();
         this.setContent([...this.getContent(), ...internalBlocks]);
-        this.container = internalBlocks;
+        this.containerIndexes = internalBlocks.map(block => block.index);
     }
 
     protected logicsBody(env: Environment): Value {
         console.log("\t\tInto container ", this._id);
+        const content = this.getContent();
 
-        for (let i = 0; i < this.container.length; ++i) {
-            console.log("\tExec : ", this.container[i]._id);
+        for (let i = 0; i < this.containerIndexes.length; ++i) {
+            console.log("\tExec : ", content[this.containerIndexes[i]]._id);
             
-            this.container[i].execute(env);
+            content[this.containerIndexes[i]].execute(env);
             if (env.signal.type !== SignalTypes.NULL) break;
         }
 
@@ -208,6 +209,7 @@ export class FuncBlock extends ContainerBlock
         }
         
         super.logicsBody(env);
+        console.log(env.signal);
         if (env.signal.type === SignalTypes.RETURN) {
             return env.signal.payload;
         } else {

@@ -17,9 +17,6 @@ export const syntaxCheck: Bch.Middleware =
  */
 export const prebuildInternalBlocks: Bch.Middleware = 
     function(info: Bch.BlockInfo, app: Bch.ButchBuilder) {
-        
-        console.log(JSON.stringify(info))
-        
         const content = info.obj.content();
         if (content && content.length > 0) {
             const newContent: Block[] = new Array<Block>(content.length);

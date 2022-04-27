@@ -47,30 +47,32 @@ export class InvokeBlock extends Block
     }
 
     execute(env: Environment): Value {
-        try {
-            return super.execute(env);
-        } catch(e: any) {
-            e?.pushBackCallStack(this._id);
-            throw e;
-        }
+        return super.execute(env);
+        // try {
+        //     return super.execute(env);
+        // } catch(e: any) {
+        //     e?.pushBackCallStack(this._id);
+        //     throw e;
+        // }
     }
 }
 
 export class DeclareBlock extends Block
 {
     public variableName: string;
-    public initBlock: Block;
+    public initBlockIndex: number;
 
     constructor(variableName: string, initBlock: Block) 
     {
         super();
         this.variableName = variableName;
-        this.initBlock = initBlock;
         this.pushToContent(initBlock);
+        this.initBlockIndex = initBlock.index;
     }
 
     protected logicsBody(env: Environment): Value {
-        const value: Value = this.initBlock.execute(env);
+        const content = this.getContent();
+        const value: Value = content[this.initBlockIndex].execute(env);
 
         if (!verifyVariableName(this.variableName)) 
             RuntimeError.throwInvalidNameError(env);
@@ -108,7 +110,7 @@ export class ExpressionBlock extends Block
         // ToDo:
         //  arithmetic and logic calculations 
         //  with supported variable's identifiers dereferencing
-        return Value.Undefined;        
+        return new Value(TypeNames.STRING, "Expression result");        
     }
 }
 
@@ -121,19 +123,37 @@ export const BreakBlock = new (class extends Block {
 
 export class ReturnBlock extends Block 
 {
-    public outBlock: Block | undefined;
+    public outBlockIndex: number | undefined;
 
     constructor(outBlock: Block | undefined) {
         super();
         if (outBlock){
-            this.outBlock = outBlock;
             this.pushToContent(outBlock);
+            this.outBlockIndex = outBlock.index;
         }
     }
 
     protected logicsBody(env: Environment): Value {
+        const content = this.getContent();
         env.signal = new Signal(SignalTypes.RETURN, 
-            this.outBlock ? this.outBlock.execute(env) : Value.Undefined);
+            this.outBlockIndex !== undefined ? content[this.outBlockIndex].execute(env) : Value.Undefined);
         return Value.Undefined;
     }
+}
+
+export class __consolelog extends Block 
+{
+    public target: Block;
+
+    constructor(target: Block) {
+        super();
+        this.pushToContent(target)
+        this.target = target;
+    }
+
+    protected logicsBody(env: Environment): Value {
+        console.log("//////////////////\n", this.target.execute(env), "\n//////////////////");
+        return Value.Undefined;
+    }
+    
 }

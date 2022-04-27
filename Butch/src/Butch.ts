@@ -1,5 +1,5 @@
 import { FuncBlock, Block, Environment, Value, TypeNames } from "./base.js"
-import { BreakBlock, DeclareBlock, ExpressionBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock } from "./blocks.js";
+import { BreakBlock, DeclareBlock, ExpressionBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
 import { RuntimeError, CompilationError } from "./errors.js"; 
 import { createButchCodesFile } from "./utils.js";
 import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch.js"
@@ -30,6 +30,19 @@ export default class Program extends Block
         return this;
     }
 
+    setBlock(newBlock: Block, path: number[]) {
+        let node: Block = this;
+        for (let i = 0; i < path.length - 1; ++i) {
+            node = node.getContent()[path[i]];
+        }        
+        
+        console.log(node);
+        const content = node.getContent();
+        content[path[path.length - 1]] = newBlock;
+        node.setContent(content);
+        console.log(node);
+    }
+
     protected logicsBody(env: Environment): Value {
         let main: any;
         try {
@@ -45,10 +58,6 @@ export default class Program extends Block
         return super.execute(this.globalEnv);
     }
 }
-
-// export type ButchObj = {
-//     [key: string]: any
-// }
 
 export type BlockInfo = {obj: ButchObj, location: number[]};
 
@@ -71,6 +80,7 @@ export class ButchBuilder
 
     constructor(codes: {[key: string]: string}) {
         this.c = codes;
+
         // bind default builders
         this.builders = new Map<string, Builder>([
             [this.c.invoker, this.buildInvoker],
@@ -82,7 +92,8 @@ export class ButchBuilder
             [this.c.text, info => new TextBlock(info.obj.get("value"))],
             [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
-            [this.c.return, info => new ReturnBlock(info.obj.extention.builtContent[0])]
+            [this.c.return, info => new ReturnBlock(info.obj.extention.builtContent[0])],
+            [this.c.__consolelog, info => new __consolelog(info.obj.extention.builtContent[0])]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();
@@ -116,6 +127,9 @@ export class ButchBuilder
         });
     }
 
+    /**
+     * only for testing
+     */
     encodeNamedProgram(path: string, callback: (e: Error | null) => void) {
         fs.readFile(path, (err, data) => {
             if (err) throw err;
@@ -156,8 +170,8 @@ export class ButchBuilder
         return new FuncBlock(info.obj.extention.builtContent, info.obj.get("nameSeq"));
     }
 
-    buildBlock(info: BlockInfo, useMiddlewares: boolean = true): Block {
-        if (useMiddlewares) this.execMiddlewares(info);
+    buildBlock(info: BlockInfo): Block {
+        this.execMiddlewares(info);
         
         let builder = this.exBuilders.get(info.obj.get("type"));
         if (builder) {
@@ -193,6 +207,14 @@ export class ButchBuilder
             }
         }
         return prog;
+    }
+
+    rebuild(prog: Program, programObj: ButchObj, targetPathes: number[][]) {
+        targetPathes.forEach(path => {
+            const block = this.buildBlock({obj: programObj.goTo(...path), location: path });
+            console.log(block);
+            prog.setBlock(block, path)
+        });
     }
 
     getCodes(): {[key: string]: string} {

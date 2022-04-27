@@ -10,19 +10,25 @@ createButchCodesFile("./.bch/ButchCodesSet.txt", "./.bch/");
 const codes = readButchCodesFile("./.bch/ButchCodes.json")
 const builder = new Butch.ButchBuilder(codes);
 
+function test() {
+    const file = fs.readFileSync("./.bch/testProgram.bch");
+    const bobj = new ButchObj(JSON.parse(file.toString()), codes);
+    
+    const program = builder.build(bobj);
+    program.execute();
+
+    bobj.goTo(2, 0).content()[0] = {[codes.type]: codes.text, [codes.value]: "__newValue__"};
+    builder.rebuild(program, bobj, [[2, 0]]);
+
+    console.log("\n\tAfter rebuilding : ");
+    // console.log(JSON.stringify(bobj.data, null, 4));
+    program.execute();
+}
+
 builder.encodeNamedProgram("./.bch/testProgram.json", () => {
     console.log("encoded");
-
-    const file = fs.readFileSync("./.bch/testProgram.bch")
-    const obj = JSON.parse(file.toString());
-    
-    console.log(obj);
-    
-    const program = builder.build(new ButchObj(obj, codes))
-    
-    console.log(program);
-
-    program.execute();
+    test();
 });
 
+// test();
 
