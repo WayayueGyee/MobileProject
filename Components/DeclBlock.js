@@ -13,7 +13,6 @@ export const DeclBlock = (props) => {
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    {props.keys.push(key)}
                                     <FuncBlock style={styles.obj} keys={[...props.keys, key]} content={value.content}/>
                                 </View>
                             )

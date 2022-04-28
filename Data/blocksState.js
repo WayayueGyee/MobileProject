@@ -138,5 +138,47 @@ export default {
                 },
             }
         }
+    },
+    5: {
+        type: "declare",
+        name: "firstVar",
+
+        content: {
+            1: {
+                type: "text", value: "var"
+            }
+        }
+    },
+    6: {
+        type: "declare",
+        name: "var",
+
+        content: {
+            1: {
+                type: "function",
+                name: "userFoo2",
+
+                content: {
+                    1: {
+                        type: "declare",
+                        name: "userFoo2Var1",
+                        content: {
+                            1: {
+                                type: "text", value: "val1"
+                            }
+                        },
+                    },
+                    2: {
+                        type: "declare",
+                        name: "userFoo2Var2",
+                        content: {
+                            1: {
+                                type: "text", value: "val2"
+                            }
+                        },
+                    }
+                }
+            }
+        }
     }
 }

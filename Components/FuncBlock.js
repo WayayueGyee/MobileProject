@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import { DeclBlock } from "./DeclBlock";
+import { InpBlock } from './InpBlock';
 
 export const FuncBlock = (props) => {
     return (
@@ -28,7 +29,7 @@ export const FuncBlock = (props) => {
 
                         case "text": {
                             return (
-                                <TextInput style={styles.input}>{value.value}</TextInput>
+                                <InpBlock keys={[...props.keys, key]} value={value.value}/>
                             )
                         }
                     }

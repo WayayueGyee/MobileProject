@@ -1,6 +1,7 @@
 import React  from "react";
 import {StyleSheet, TextInput, View} from "react-native";
 import { FuncBlock } from "./FuncBlock";
+import { DeclBlock } from "./DeclBlock";
 import state from '../Data/blocksState';
 
 export const RenderObj = () => {
@@ -12,12 +13,19 @@ export const RenderObj = () => {
                     switch (value.type) {
                         case "function": {
                             return (
-                                <>
-                                    <View style={styles.obj}>
-                                        <TextInput style={styles.input} value={value.name}/>
-                                        <FuncBlock content={value.content} keys={[key]}/>
-                                    </View>
-                                </>
+                                <View style={styles.obj}>
+                                    <TextInput style={styles.input} value={value.name}/>
+                                    <FuncBlock content={value.content} keys={[key]}/>
+                                </View>
+                            )
+                        }
+
+                        case "declare": {
+                            return (
+                                <View style={styles.obj}>
+                                    <TextInput style={styles.input} value={value.name}/>
+                                    <DeclBlock content={value.content} keys={[key]}/>
+                                </View>
                             )
                         }
                     }

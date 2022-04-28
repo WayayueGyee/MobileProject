@@ -1,36 +1,49 @@
 import React, { useState } from "react";
 import { StyleSheet, FlatList, View, Text, TouchableOpacity } from "react-native";
-import { useDispatch } from "react-redux";
-import { addBlockAction } from "../redux/Actions/addBlockAction";
+import blocksState from "../Data/blocksState"; 
+import {RenderObj} from "./RenderObj";
 
 export const BlocksList = () => {
   const [show, setShow] = useState(false);
-  const dispatch = useDispatch()
+  const [state, setState] = useState(<RenderObj/>);
 
-  const onPressEvent = (id, type, blockType) => {
-    dispatch(addBlockAction({id: id, type: type, blockType: blockType,  count: 1}))
+  const onPressEvent = (id, type) => {
+    blocksState[id] = {
+      type: type,
+      name: '123',
+      content: {
+        1: {
+          type: 'text', value: '123'
+        }
+      }
+    }
+
+    setState(<RenderObj/>);
   }
 
   return (
-    <View style={styles.view}>
-      <TouchableOpacity onPress={() => setShow(!show)}>
-        <Text style={styles.menu}>menu</Text>
-      </TouchableOpacity>
-      {show &&
-        <FlatList
-          data={[
-            {type: 'variable'},
-            {type: 'operation'},
-            {type: 'function'}
-          ]}
-          renderItem={({item}) => (
-              <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type)} style={styles.button}>
-                <Text style={styles.text}>{item.type}</Text>
-              </TouchableOpacity>
-            )
-          }
-        />
-      }
+    <View>
+      <View style={styles.view}>
+        <TouchableOpacity onPress={() => setShow(!show)}>
+          <Text style={styles.menu}>menu</Text>
+        </TouchableOpacity>
+        {show &&
+          <FlatList
+            data={[
+              {type: 'declare'},
+              {type: 'operation'},
+              {type: 'function'}
+            ]}
+            renderItem={({item}) => (
+                <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type)} style={styles.button}>
+                  <Text style={styles.text}>{item.type}</Text>
+                </TouchableOpacity>
+              )
+            }
+          />
+        }
+      </View>
+      {state}
     </View>
   )
 }
@@ -38,6 +51,10 @@ export const BlocksList = () => {
 const styles = StyleSheet.create({
   view: {
     width: '30%'
+  },
+
+  renderView: {
+    width: '100%'
   },
 
   button: {

@@ -8,6 +8,7 @@ export const InpBlock = (props) => {
     const changeText = (text) => {
         setValue(text)
         let keys = [...props.keys]
+        alert(keys);
         StateAPI.changeValue(keys, text)
     }
 
