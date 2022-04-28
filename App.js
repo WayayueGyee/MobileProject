@@ -1,7 +1,4 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
  * @flow strict-local
  */
@@ -15,8 +12,9 @@ import Colors from "./app/config/colors";
 
 const App = () => {
   const [taskList, setTaskList] = useState([
-    { text: "Implement drag and drop", id: 1 },
-    { text: "Do something cool", id: 2 },
+    { text: "Implement drag and drop 🤯", id: 1 },
+    { text: "Do something cool 😎", id: 2 },
+    { text: "This block needs to check blocks collision 🤣", id: 3 },
   ]);
 
   return (
