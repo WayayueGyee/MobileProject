@@ -73,6 +73,28 @@ export const addObjReducer = (state = initialState, action) => {
         case "ADD_OBJ": {
             return {...state, ...action.payload};
         }
+        case "CHANGE_OBJ": {
+            let keys = action.payload.keys;
+
+            function recursiveChange(keys, object) {
+                if (keys.length === 0) return;
+                let k = keys.shift();
+                Object.entries(object).map(([key, value]) => {
+                    if (key === k) {
+                        console.log(value)
+
+                        if (keys.length === 0) {
+                            value.value = action.payload.value;
+                        }
+
+                        return recursiveChange(keys, value.content);
+                    }
+                })
+            }
+
+            recursiveChange(keys, initialState)
+            break;
+        }
         default: {
             return state
         }

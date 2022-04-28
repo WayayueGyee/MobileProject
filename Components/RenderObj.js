@@ -15,10 +15,10 @@ export const RenderObj = () => {
                         case "function": {
                             return (
                                 <>
-                                    <TouchableOpacity style={styles.obj}>
+                                    <View style={styles.obj}>
                                         <TextInput style={styles.input} value={value.name}/>
                                         <FuncBlock content={value.content}/>
-                                    </TouchableOpacity>
+                                    </View>
                                 </>
                             )
                         }

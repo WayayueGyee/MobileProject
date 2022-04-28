@@ -10,19 +10,19 @@ export const FuncBlock = (props) => {
                     switch (value.type) {
                         case "function": {
                             return (
-                                <TouchableOpacity style={styles.funcObj}>
+                                <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
                                     <FuncBlock style={styles.funcObj} content={value.content}/>
-                                </TouchableOpacity>
+                                </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <TouchableOpacity style={styles.funcObj}>
+                                <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
                                     <DeclBlock content={value.content}/>
-                                </TouchableOpacity>
+                                </View>
                             )
                         }
 

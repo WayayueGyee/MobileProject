@@ -10,19 +10,19 @@ export const DeclBlock = (props) => {
                     switch (value.type) {
                         case "function": {
                             return (
-                                <TouchableOpacity style={styles.obj}>
+                                <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
                                     <FuncBlock style={styles.obj} content={value.content}/>
-                                </TouchableOpacity>
+                                </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <TouchableOpacity style={styles.obj}>
+                                <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
                                     <DeclBlock style={styles.obj} content={value.content}/>
-                                </TouchableOpacity>
+                                </View>
                             )
                         }
 
