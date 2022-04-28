@@ -2,10 +2,13 @@ import React  from "react";
 import {StyleSheet, TextInput, View} from "react-native";
 import { FuncBlock } from "./FuncBlock";
 import { DeclBlock } from "./DeclBlock";
+import { Input, Icon, useTheme } from '@rneui/themed';
 import state from '../Data/blocksState';
 
 export const RenderObj = () => {
     const data = state;
+    const { theme } = useTheme();
+    
     return (
         <View style={styles.view}>
             {
@@ -14,7 +17,17 @@ export const RenderObj = () => {
                         case "function": {
                             return (
                                 <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
+                                    <Input
+                                        placeholder="name"
+                                        leftIcon={
+                                            <Icon
+                                                name='edit-3'
+                                                type='feather'
+                                                color={theme.colors.primary}
+                                            />
+                                        }
+                                        value={value.name}
+                                        />
                                     <FuncBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
