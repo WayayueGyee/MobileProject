@@ -10,13 +10,13 @@ export const RenderList = () => {
   return (
     <View style={styles.view}>
       {
-        Object.values(data.functionBlocks).map((item) => {
-        switch (item.type) {
+        Object.entries(data).map(([key, value]) => {
+        switch (value.type) {
           case 'function': {
             return (
               <>
-                <Text>{item.id}</Text>
-                <FunctionBlock key={item.id} id={item.id}/>
+                <Text>{key}</Text>
+                <FunctionBlock key={key} id={key}/>
               </>
             )
           }
@@ -24,7 +24,7 @@ export const RenderList = () => {
           case 'variable': {
             return (
                 <>
-              <DeclareBlock key={item.id} id={item.id}/>
+              <DeclareBlock key={key} id={key}/>
               </>
             )
           }

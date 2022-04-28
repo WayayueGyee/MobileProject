@@ -17,12 +17,12 @@ export const FunctionBlock = (props) => {
   return(
     <View style={styles.component}>
       <View style={styles.view}>
-        <Text style={styles.text}>Variable</Text>
+        <Text style={styles.text}>Function</Text>
         <View style={styles.inputView}>
           <TextInput blockId={props.id} style={styles.inputFirst} placeholder={"variable name"}/>
-          {Object.values(data.functionBlocks[props.id].content.value).map((item) => {
+          {Object.keys(data[props.id].content.value).map((item) => {
             return (
-              <FunctionInput id={props.id} count={item.valueId}/>
+              <FunctionInput id={props.id} count={item}/>
             )
           })}
           <TouchableOpacity style={styles.button}

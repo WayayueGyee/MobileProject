@@ -13,10 +13,10 @@ export const FunctionInput = (props) => {
 
   return (
       <TextInput style={styles.input} placeholder={"variable value"}
-                 value={data.functionBlocks[props.id].content.value[props.count].value}
-                 onChangeText={(text) => {
-                   addValueInput({id: props.id, valueId: props.count, value: text})
-                 }}
+         value={data[props.id].content.value[props.count].value}
+         onChangeText={(text) => {
+           addValueInput({id: props.id, valueId: props.count, value: text})
+         }}
       />
   )
 }

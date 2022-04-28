@@ -19,12 +19,12 @@ export const BlocksList = () => {
       {show &&
         <FlatList
           data={[
-            {type: 'variable', block: 'declareBlocks'},
+            {type: 'variable'},
             {type: 'operation'},
-            {type: 'function', block: 'functionBlocks'}
+            {type: 'function'}
           ]}
           renderItem={({item}) => (
-              <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type, item.block)} style={styles.button}>
+              <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type)} style={styles.button}>
                 <Text style={styles.text}>{item.type}</Text>
               </TouchableOpacity>
             )
