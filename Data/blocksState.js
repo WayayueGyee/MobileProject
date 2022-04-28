@@ -1,6 +1,4 @@
-import constants from '../constants.js';
-
-const initialState = {
+export default {
     1: {
         type: "function",
         name: "main",
@@ -141,39 +139,4 @@ const initialState = {
             }
         }
     }
-}
-
-export const addObjReducer = (state = initialState, action) => {
-    switch (action.type) {
-        case constants.ADD_OBJECT: {
-            return {...state, ...action.payload};
-        }
-        case constants.CHANGE_OBJECT: {
-            let keys = action.payload.keys;
-            let actionState = state;
-
-            function recursiveChange(keys, object) {
-                if (keys.length === 0) return;
-                let k = keys.shift();
-                Object.entries(object).map(([key, value]) => {
-                    if (key === k) {
-                        if (keys.length === 0) {
-                            value.value = action.payload.value;
-                        }
-
-                        return recursiveChange(keys, value.content);
-                    }
-                })
-            }
-
-            recursiveChange(keys, actionState)
-            alert(actionState[1].content[1].content[1].content[1].value)
-            return actionState;
-        }
-        default: {
-            return state
-        }
-    }
-
-    return state
 }

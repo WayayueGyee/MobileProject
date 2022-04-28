@@ -1,12 +1,10 @@
 import React  from "react";
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import { useSelector } from "react-redux";
-import { FunctionBlock } from "./FunctionBlock";
-import {DeclareBlock} from "./DeclareBlock";
+import {StyleSheet, TextInput, View} from "react-native";
 import { FuncBlock } from "./FuncBlock";
+import state from '../Data/blocksState';
 
 export const RenderObj = () => {
-    const data = useSelector(state => state.addObjReducer);
+    const data = state;
     return (
         <View style={styles.view}>
             {

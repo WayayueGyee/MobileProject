@@ -1,19 +1,19 @@
-import React from 'react'
-import {useDispatch} from "react-redux";
-import {changeObjectAction} from "../redux/Actions/changeObjectAction";
+import React, {useState} from 'react'
 import {StyleSheet, TextInput, View} from "react-native";
+import { StateAPI } from '../DataController/blockStateAPI';
 
 export const InpBlock = (props) => {
-    const dispatch = useDispatch();
+    const [value, setValue] = useState(props.value);
 
     const changeText = (text) => {
-        //alert(props.keys)
-        dispatch(changeObjectAction({keys: props.keys, value: text}))
+        setValue(text)
+        let keys = [...props.keys]
+        StateAPI.changeValue(keys, text)
     }
 
     return (
         <View>
-            <TextInput style={styles.input} onChangeText={(text) => changeText(text)} value={props.value}/>
+            <TextInput style={styles.input} onChangeText={(text) => changeText(text)} value={value}/>
         </View>
     )
 }

@@ -1,8 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {StyleSheet, TextInput, View} from "react-native";
 import {FuncBlock} from "./FuncBlock";
-import changeObjectAction from "../redux/Actions/changeObjectAction";
-import {useDispatch} from "react-redux";
 import {InpBlock} from "./InpBlock";
 
 export const DeclBlock = (props) => {
