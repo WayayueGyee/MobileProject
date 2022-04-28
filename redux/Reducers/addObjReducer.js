@@ -70,7 +70,7 @@ const initialState = {
 
 export const addObjReducer = (state = initialState, action) => {
     switch (action.type) {
-        case "ADD_OBJ": {
+        case constants.ADD_OBJECT: {
             return {...state, ...action.payload};
         }
         case "CHANGE_OBJ": {
