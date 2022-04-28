@@ -1,19 +1,27 @@
 import React from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {StyleSheet, TextInput, View} from "react-native";
 import { DeclBlock } from "./DeclBlock";
 import { InpBlock } from './InpBlock';
 
-export const FuncBlock = (props) => {
+export type Props = {
+    content: Object;
+    keys: Array<number | string>;
+}
+
+export const FuncBlock: React.FC<Props> = ({
+    content,
+    keys
+}) => {
     return (
-        <View style={styles.obj}>
+        <View>
             {
-                Object.entries(props.content).map(([key, value]) => {
+                Object.entries(content).map(([key, value]: [key: string | number, value: any]) => {
                     switch (value.type) {
                         case "function": {
                             return (
                                 <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <FuncBlock style={styles.funcObj} content={value.content} keys={[...props.keys, key]}/>
+                                    <FuncBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
@@ -22,15 +30,19 @@ export const FuncBlock = (props) => {
                             return (
                                 <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock content={value.content} keys={[...props.keys, key]}/>
+                                    <DeclBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <InpBlock keys={[...props.keys, key]} value={value.value}/>
+                                <InpBlock keys={[...keys, key]} value={value.value}/>
                             )
+                        }
+
+                        default: {
+                            return;
                         }
                     }
                 })

@@ -3,12 +3,13 @@ import { StyleSheet, FlatList, View, Text, TouchableOpacity } from "react-native
 import blocksState from "../Data/blocksState"; 
 import {RenderObj} from "./RenderObj";
 
-export const BlocksList = () => {
+export const BlocksList: React.FC = () => {
   const [show, setShow] = useState(false);
   const [state, setState] = useState(<RenderObj/>);
-
-  const onPressEvent = (id, type) => {
-    blocksState[id] = {
+  const block: any = blocksState;
+  
+  const onPressEvent = (id: number | string, type: string) => {
+    block[id] = {
       type: type,
       name: '123',
       content: {
@@ -25,7 +26,7 @@ export const BlocksList = () => {
     <View>
       <View style={styles.view}>
         <TouchableOpacity onPress={() => setShow(!show)}>
-          <Text style={styles.menu}>menu</Text>
+          <Text>menu</Text>
         </TouchableOpacity>
         {show &&
           <FlatList
