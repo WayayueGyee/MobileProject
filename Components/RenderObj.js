@@ -17,7 +17,7 @@ export const RenderObj = () => {
                                 <>
                                     <View style={styles.obj}>
                                         <TextInput style={styles.input} value={value.name}/>
-                                        <FuncBlock content={value.content}/>
+                                        <FuncBlock content={value.content} keys={[key]}/>
                                     </View>
                                 </>
                             )

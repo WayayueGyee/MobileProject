@@ -1,6 +1,9 @@
 import React from 'react';
 import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {FuncBlock} from "./FuncBlock";
+import changeObjectAction from "../redux/Actions/changeObjectAction";
+import {useDispatch} from "react-redux";
+import {InpBlock} from "./InpBlock";
 
 export const DeclBlock = (props) => {
     return (
@@ -12,7 +15,8 @@ export const DeclBlock = (props) => {
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <FuncBlock style={styles.obj} content={value.content}/>
+                                    {props.keys.push(key)}
+                                    <FuncBlock style={styles.obj} keys={[...props.keys, key]} content={value.content}/>
                                 </View>
                             )
                         }
@@ -21,14 +25,14 @@ export const DeclBlock = (props) => {
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock style={styles.obj} content={value.content}/>
+                                    <DeclBlock style={styles.obj} keys={[...props.keys, key]} content={value.content}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <TextInput style={styles.input}>{value.value}</TextInput>
+                                <InpBlock keys={[...props.keys, key]} value={value.value}/>
                             )
                         }
                     }

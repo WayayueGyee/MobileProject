@@ -12,7 +12,7 @@ export const FuncBlock = (props) => {
                             return (
                                 <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <FuncBlock style={styles.funcObj} content={value.content}/>
+                                    <FuncBlock style={styles.funcObj} content={value.content} keys={[...props.keys, key]}/>
                                 </View>
                             )
                         }
@@ -21,7 +21,7 @@ export const FuncBlock = (props) => {
                             return (
                                 <View style={styles.funcObj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock content={value.content}/>
+                                    <DeclBlock content={value.content} keys={[...props.keys, key]}/>
                                 </View>
                             )
                         }
