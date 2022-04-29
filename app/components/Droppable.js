@@ -8,6 +8,7 @@ class Droppable extends React.Component {
   static get propTypes() {
     return {
       children: PropTypes.any,
+      style: PropTypes.oneOfType(PropTypes.object, PropTypes.array),
     };
   }
 

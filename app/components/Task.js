@@ -5,15 +5,11 @@ import { TextInput, View, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from "../config/colors";
 import Draggable from "./Draggable";
 
+const LONG_PRESS_DELAY = 350;
+
 class Task extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      text: props.text,
-      id: props.id,
-      isDone: false,
-      isDragging: false,
-    };
   }
 
   static get propTypes() {
@@ -25,12 +21,11 @@ class Task extends React.Component {
 
   render() {
     return (
-      <Draggable style={styles.taskContainer}>
+      <Draggable delayLongPress={LONG_PRESS_DELAY} style={styles.taskContainer}>
         <View style={styles.taskLeftItems}>
           <TouchableOpacity style={styles.square}></TouchableOpacity>
-
           <TextInput multiline={true} style={styles.taskText}>
-            {this.state.text}
+            {this.props.text}
           </TextInput>
         </View>
         <View style={styles.taskStatus}></View>

@@ -8,6 +8,7 @@ import { View, StyleSheet } from "react-native";
 import Task from "./app/components/Task";
 import TasksTitle from "./app/components/TasksTitle";
 
+import Circle from "./app/components/Circle";
 import Colors from "./app/config/colors";
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
           <Task key={task.id} text={task.text}></Task>
         ))}
       </View>
+      <Circle></Circle>
     </View>
   );
 };
