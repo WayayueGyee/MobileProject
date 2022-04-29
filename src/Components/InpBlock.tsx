@@ -3,21 +3,21 @@ import {StyleSheet, TextInput, View} from "react-native";
 import { StateAPI } from '../DataController/blockStateAPI';
 
 export type Props = {
-    value: string | number;
+    value: string | undefined;
     keys: Array<number | string>;
 }
 
-export const InpBlock: React.FC<Props> = (
+export const InpBlock: React.FC<Props> = ({
     value,
-    propsKeys
-) => {
-    const [inputValue, setInputValue] = useState(value.toString());
+    keys
+}) => {
+    const [inputValue, setInputValue] = useState(value);
 
     const changeText = (text: string) => {
         setInputValue(text);
-        let keys = [propsKeys];
+        let keysCopy = [...keys];
         alert(keys);
-        StateAPI.changeValue(keys, text);
+        StateAPI.changeValue(keysCopy, text);
     }
 
     return (
