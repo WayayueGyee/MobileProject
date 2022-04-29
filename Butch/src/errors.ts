@@ -1,25 +1,29 @@
-import { Environment, Block } from "./base.js"
+import { Environment } from "./base.js"
 import * as Bch from "./Butch.js"
 
 export class RuntimeError extends Error
 {
-    public blockIdStack: Array<string> = [];
-    public blockIndexStack: Array<number> = [];
+    public blockIdStack: string[][] = [];
+    public blockIndexStack: number[][] = [];
 
     constructor(env: Environment, message: string) {
         super(message);
         // this.stack = ""
-        let curEnv: Environment | undefined = env;
-        while (curEnv) {
-            this.pushBackCallStack(curEnv.curBlock);
-            curEnv = curEnv.parenEnv; 
-        }
+        this.logEnv(env);
     }
 
-    pushBackCallStack(block: Block) {
-        this.stack += `\nIn Block ${block._id}`;
-        this.blockIdStack.push(block._id);
-        this.blockIndexStack.push(block.index);
+    logEnv(env: Environment) {
+        let curEnv: Environment | undefined = env;
+        const idFrame = [], indexFrame = [];
+        while (curEnv) {
+            this.stack += `\nIn Block ${curEnv.curBlock._id}`;
+            idFrame.push(curEnv.curBlock._id);
+            indexFrame.push(curEnv.curBlock.index);
+            curEnv = curEnv.parenEnv; 
+        }
+
+        this.blockIdStack.push(idFrame);
+        this.blockIndexStack.push(indexFrame);
     }
 
     static throwTypeError(env: Environment, expected: string, had: string): never {
@@ -45,6 +49,10 @@ export class RuntimeError extends Error
 
     static throwRedefineError(env: Environment, referenceName: string): never {
         this.throwIdentifierError(env, `Symbol ${referenceName} is already defined`);
+    }
+
+    static throwInvalidExpression(env: Environment): never {
+        throw new RuntimeError(env, "Invalid expression syntax ");
     }
 
     static throwArgumentError(env: Environment): never {

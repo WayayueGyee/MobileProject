@@ -23,7 +23,7 @@ export const RenderList = () => {
 
           case 'variable': {
             return (
-                <>
+              <>
               <DeclareBlock key={item.id} id={item.id}/>
               </>
             )

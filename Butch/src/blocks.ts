@@ -35,25 +35,17 @@ export class InvokeBlock extends Block
 
     protected logicsBody(env: Environment): Value {
         const target: any = env.get(this.targetName).evaluate(env, TypeNames.FUNCKBLOCK, true);
-        if (this.arguments.length !== target.argNames.length)
-            RuntimeError.throwArgumentError(env);
 
-        let newEnv = new Environment(target);
-        for (let i = 0; i < this.arguments.length; ++i) {
-            newEnv.create(target.argNames[i], this.arguments[i].execute(env));
+        const args: Value[] = new Array<Value>(this.arguments.length);
+        for (let i = 0; i < args.length; ++i) {
+            args[i] = this.arguments[i].execute(env);
         }
 
-        return target.execute(newEnv);
+        return target.execute(env, args);
     }
 
     execute(env: Environment): Value {
         return super.execute(env);
-        // try {
-        //     return super.execute(env);
-        // } catch(e: any) {
-        //     e?.pushBackCallStack(this._id);
-        //     throw e;
-        // }
     }
 }
 
@@ -93,24 +85,6 @@ export class _dereferenceBlock extends Block
 
     protected logicsBody(env: Environment): Value {
         return env.get(this.variableName);
-    }
-}
-
-export class ExpressionBlock extends Block 
-{
-    public expression: string;
-
-    constructor(expression: string) {
-        super();
-        this.expression = expression;
-    }
-
-    protected logicsBody(env: Environment): Value {
-        
-        // ToDo:
-        //  arithmetic and logic calculations 
-        //  with supported variable's identifiers dereferencing
-        return new Value(TypeNames.STRING, "Expression result");        
     }
 }
 

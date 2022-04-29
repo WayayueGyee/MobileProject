@@ -44,6 +44,7 @@ export default class ButchObj
         if (!obj) {
             throw Error("Invalid path to find block")
         }
+        this.goTo(1, 2, 3, 4, 5)
         return new ButchObj(obj, this.codes);
     }
 }

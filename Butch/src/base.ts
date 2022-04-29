@@ -3,9 +3,12 @@ import {v4 as idv4} from "uuid"
 
 export enum TypeNames
 {
-    UNDEFINED = -1,
+    UNDEFINED = -Infinity,
+    ANY = 0,
     NUMBER = 1000, // primitives
     STRING = 1001,
+    ARRAY = 1002,
+    BOOLEAN = 1003,
     BLOCK = 2000, // blocks
     SCOPEBLOCK = 2001,
     FUNCKBLOCK = 2002    
@@ -15,10 +18,10 @@ export class Value
 {
     static Undefined: Value = new Value(TypeNames.UNDEFINED)
 
-    private value: Object | Block | undefined;
+    private value: any | Block | undefined;
     private typeName: TypeNames;
 
-    constructor(typeName: TypeNames, value: Object | undefined = undefined) {
+    constructor(typeName: TypeNames, value: any | undefined = undefined) {
         this.value = value;
         this.typeName = typeName;
     }
@@ -26,15 +29,18 @@ export class Value
     evaluate(env: Environment, expectedTypeName: TypeNames,
         strict: boolean = false) : Object
     {
-        if (this.value && 
+        if (this.typeName === TypeNames.ANY ||
             (!strict && 1000 > Math.abs(this.typeName - expectedTypeName) ||
             strict && this.typeName === expectedTypeName)) 
         {
             return this.value;
         } else {
             RuntimeError.throwTypeError(env, TypeNames[expectedTypeName], TypeNames[this.typeName]);
-            return Value.Undefined;
         }
+    }
+
+    getType() {
+        return this.typeName;
     }
 
     assign(value: Value) {
@@ -127,7 +133,7 @@ export abstract class Block
         const result = this.logicsBody(env);
         env.curBlock = prevBlock;
 
-        console.log("Executed ", this._id, this.constructor, " result ", result);
+        // console.log("Executed ", this._id, this.constructor, " result ", result);
         
         return result;
     }
@@ -178,11 +184,11 @@ export abstract class ContainerBlock extends ScopeBlock
     }
 
     protected logicsBody(env: Environment): Value {
-        console.log("\t\tInto container ", this._id);
+        // console.log("\t\tInto container ", this._id);
         const content = this.getContent();
 
         for (let i = 0; i < this.containerIndexes.length; ++i) {
-            console.log("\tExec : ", content[this.containerIndexes[i]]._id);
+            // console.log("\tExec : ", content[this.containerIndexes[i]]._id);
             
             content[this.containerIndexes[i]].execute(env);
             if (env.signal.type !== SignalTypes.NULL) break;
@@ -202,18 +208,31 @@ export class FuncBlock extends ContainerBlock
     }
 
     protected logicsBody(env: Environment): Value {
-        for (let i = 0; i < this.argNames.length; ++i) {
-            if (!env.has(this.argNames[i])) {
-                env.create(this.argNames[i], Value.Undefined)
-            }
-        }
-        
         super.logicsBody(env);
-        console.log(env.signal);
+        // console.log(env.signal);
         if (env.signal.type === SignalTypes.RETURN) {
             return env.signal.payload;
         } else {
             return Value.Undefined;
         }
+    }
+
+    execute(env: Environment, args: Value[] = []): Value {
+        if (args.length !== this.argNames.length) {
+            RuntimeError.throwArgumentError(env);
+        }
+
+        const argsEnv = new Environment(this);
+        for (let i = 0; i < args.length; ++i) {
+            env.create(this.argNames[i], args[i]);
+        }
+
+        try {
+            return super.execute(env);
+        } catch (e: any) {
+            if (e.logEnv) e.logEnv(env)
+            throw e;
+        }
+        
     }
 }

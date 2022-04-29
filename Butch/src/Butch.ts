@@ -1,5 +1,6 @@
 import { FuncBlock, Block, Environment, Value, TypeNames } from "./base.js"
-import { BreakBlock, DeclareBlock, ExpressionBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
+import { BreakBlock, DeclareBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
+import ExpressionBlock from "./ExpressionBlock.js"
 import { RuntimeError, CompilationError } from "./errors.js"; 
 import { createButchCodesFile } from "./utils.js";
 import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch.js"

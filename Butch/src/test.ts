@@ -10,19 +10,17 @@ createButchCodesFile("./.bch/ButchCodesSet.txt", "./.bch/");
 const codes = readButchCodesFile("./.bch/ButchCodes.json")
 const builder = new Butch.ButchBuilder(codes);
 
-function test() {
+export function test() {
     const file = fs.readFileSync("./.bch/testProgram.bch");
     const bobj = new ButchObj(JSON.parse(file.toString()), codes);
     
     const program = builder.build(bobj);
     program.execute();
 
-    bobj.goTo(2, 0).content()[0] = {[codes.type]: codes.text, [codes.value]: "__newValue__"};
-    builder.rebuild(program, bobj, [[2, 0]]);
-
-    console.log("\n\tAfter rebuilding : ");
-    // console.log(JSON.stringify(bobj.data, null, 4));
-    program.execute();
+    // bobj.goTo(2, 0).content()[0] = {[codes.type]: codes.text, [codes.value]: "__newValue__"};
+    // builder.rebuild(program, bobj, [[2, 0]]);
+    // console.log("\n\tAfter rebuilding : ");
+    // program.execute();
 }
 
 builder.encodeNamedProgram("./.bch/testProgram.json", () => {
@@ -31,4 +29,3 @@ builder.encodeNamedProgram("./.bch/testProgram.json", () => {
 });
 
 // test();
-
