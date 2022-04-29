@@ -5,14 +5,14 @@ import { DeclBlock } from "./DeclBlock";
 import { Input, Icon, useTheme } from '@rneui/themed';
 import state from '../Data/blocksState';
 
-export const RenderObj = () => {
+export const RenderObj: React.FC = () => {
     const data = state;
     const { theme } = useTheme();
     
     return (
-        <View style={styles.view}>
+        <View>
             {
-                Object.entries(data).map(([key, value]) => {
+                Object.entries(data).map(([key, value]: [key: string | number, value: any]) => {
                     switch (value.type) {
                         case "function": {
                             return (
@@ -42,6 +42,8 @@ export const RenderObj = () => {
                             )
                         }
                     }
+
+                    return;
                 })
             }
         </View>

@@ -3,17 +3,25 @@ import {StyleSheet, TextInput, View} from "react-native";
 import {FuncBlock} from "./FuncBlock";
 import {InpBlock} from "./InpBlock";
 
-export const DeclBlock = (props) => {
+export type Props = {
+    keys: Array<number | string>,
+    content: any,
+}
+
+export const DeclBlock: React.FC<Props> = ({
+    keys,
+    content
+}) => {
     return (
         <View>
             {
-                Object.entries(props.content).map(([key, value]) => {
+                Object.entries(content).map(([key, value]: [key: number | string, value: any]) => {
                     switch (value.type) {
                         case "function": {
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <FuncBlock style={styles.obj} keys={[...props.keys, key]} content={value.content}/>
+                                    <FuncBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
@@ -22,17 +30,19 @@ export const DeclBlock = (props) => {
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock style={styles.obj} keys={[...props.keys, key]} content={value.content}/>
+                                    <DeclBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <InpBlock keys={[...props.keys, key]} value={value.value}/>
+                                <InpBlock keys={[...keys, key]} value={value.value}/>
                             )
                         }
                     }
+
+                    return;
                 })
             }
         </View>
