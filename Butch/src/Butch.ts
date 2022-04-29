@@ -9,7 +9,7 @@ import ButchObj from "./ButchObj.js";
 import * as fs from "fs"
 import _path from "path"
 
-export default class Program extends Block
+export class Program extends Block
 {
     private globalEnv: Environment;
 
@@ -223,3 +223,4 @@ export class ButchBuilder
     }
 }
 
+export default Program;
