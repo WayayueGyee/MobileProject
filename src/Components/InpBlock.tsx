@@ -19,24 +19,29 @@ export const InpBlock: React.FC<Props> = ({
     const changeText = (text: string) => {
         setInputValue(text);
         let keysCopy = [...keys];
-        alert(keys);
+        //alert(keys);
         StateAPI.changeValue(keysCopy, text);
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             <TextInput style={styles.input} onChangeText={(text) => changeText(text)} value={inputValue}/>
         </View>
     )
 }
 
 const useStyles = makeStyles((theme) => ({
-    input: {
-        background: theme.colors?.white,
-        color: theme.colors?.black,
+    container: {
+        backgroundColor: theme.colors?.primary,
+        borderRadius: 10,
         marginLeft: 10,
-        marginRight: 10,
+        marginRight: 10
+    },
+
+    input: {
+        color: theme.colors?.white,
         minWidth: 50,
-        borderRadius: 10
-    }
+        borderRadius: 10,
+        fontSize: 16
+    },
 }))

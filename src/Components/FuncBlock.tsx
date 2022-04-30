@@ -1,7 +1,8 @@
 import React from 'react';
-import {StyleSheet, TextInput, View} from "react-native";
+import { TextInput, View} from "react-native";
 import { DeclBlock } from "./DeclBlock";
 import { InpBlock } from './InpBlock';
+import { useTheme, makeStyles } from '@rneui/themed';
 
 export type Props = {
     content: Object;
@@ -12,6 +13,8 @@ export const FuncBlock: React.FC<Props> = ({
     content,
     keys
 }) => {
+    const theme = useTheme();
+    const styles = useStyles(theme)
     return (
         <View>
             {
@@ -51,9 +54,9 @@ export const FuncBlock: React.FC<Props> = ({
     )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
     funcObj: {
-        backgroundColor: 'black',
+        backgroundColor: theme.colors?.grey5,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -81,11 +84,12 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        backgroundColor: 'white',
-        color: 'black',
+        backgroundColor: theme.colors?.warning,
+        color: theme.colors?.white,
         marginLeft: 10,
         marginRight: 10,
         minWidth: 50,
-        borderRadius: 10
+        borderRadius: 10,
+        fontSize: 16
     }
-})
+}))
