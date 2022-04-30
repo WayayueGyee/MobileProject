@@ -76,10 +76,10 @@
     "build",
     "coverage",
     "node_modules",
-    "babel.config.js",
+    "babel.config.cjs",
     ".eslintrc.js",
     ".prettirerrc.js",
-    "metro.config.js",
+    "metro.config.cjs",
     "jest.config.js",
     "index.js",
     "src/app/App.js"
