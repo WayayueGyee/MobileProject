@@ -5,13 +5,15 @@ export enum TypeNames
 {
     UNDEFINED = -Infinity,
     ANY = 0,
-    NUMBER = 1000, // primitives
-    STRING = 1001,
-    ARRAY = 1002,
+    PRIMITIVE = 1000,
+    NUMBER = 1001, // primitives
+    STRING = 1002,
     BOOLEAN = 1003,
     BLOCK = 2000, // blocks
     SCOPEBLOCK = 2001,
-    FUNCKBLOCK = 2002    
+    FUNCKBLOCK = 2002,
+
+    ARRAY = 3001,    
 }
 
 export class Value 
@@ -29,7 +31,7 @@ export class Value
     evaluate(env: Environment, expectedTypeName: TypeNames,
         strict: boolean = false) : Object
     {
-        if (this.typeName === TypeNames.ANY ||
+        if (this.typeName === TypeNames.ANY || expectedTypeName === TypeNames.ANY ||
             (!strict && 1000 > Math.abs(this.typeName - expectedTypeName) ||
             strict && this.typeName === expectedTypeName)) 
         {
@@ -222,9 +224,9 @@ export class FuncBlock extends ContainerBlock
             RuntimeError.throwArgumentError(env);
         }
 
-        const argsEnv = new Environment(this);
+        const argsEnv = new Environment(this, env);
         for (let i = 0; i < args.length; ++i) {
-            env.create(this.argNames[i], args[i]);
+            argsEnv.create(this.argNames[i], args[i]);
         }
 
         try {
@@ -233,6 +235,5 @@ export class FuncBlock extends ContainerBlock
             if (e.logEnv) e.logEnv(env)
             throw e;
         }
-        
     }
 }

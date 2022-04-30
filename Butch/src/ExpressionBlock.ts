@@ -1,12 +1,17 @@
+// Darnger Zone :
+//      "govnina-code"
+
 import { Block, Environment, FuncBlock, TypeNames, Value } from "./base.js"
-import { DeclareBlock, InvokeBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
-import Program from "./Butch.js";
+import { DeclareBlock, InvokeBlock, ReturnBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
+import { Program } from "./Butch.js";
 import { RuntimeError } from "./errors.js"
 
 
 const factorial = (function() {
     const cache = [1, 1]
+    const cacheMax = 170; // >170! in js = INF
     return function(n: number) {
+        if (n > cacheMax) return Infinity;
         for (let i = cache.length, cur = cache[cache.length - 1]; i <= n; ++i) {
             cache.push(cur *= i);
         }
@@ -14,19 +19,17 @@ const factorial = (function() {
     }
 })()
 
-enum OpTypes {
-    NUM = 0,
-    STR = 1,
-    BOOL = 2,
-    ANY = 3,
-    SYS = 4
-}
-
+// need to be replaced in "Value" class 
 const casters = new Map<TypeNames, Function>([
     [TypeNames.NUMBER, (env: Environment, val: Value) => Number(val.evaluate(env, TypeNames.NUMBER))],
     [TypeNames.STRING, (env: Environment, val: Value) => String(val.evaluate(env, TypeNames.STRING))],
     [TypeNames.BOOLEAN, (env: Environment, val: Value) => Boolean(val.evaluate(env, TypeNames.BOOLEAN))],
-    [TypeNames.ANY, (env: Environment, val: Value) => val.evaluate(env, TypeNames.BOOLEAN)]
+    [TypeNames.PRIMITIVE, (env: Environment, val: Value) => 
+        val.getType() === TypeNames.ANY || Math.abs(val.getType() - TypeNames.PRIMITIVE) < 1000 ? 
+            val.evaluate(env, TypeNames.ANY) 
+            : RuntimeError.throwTypeError(env, "primitive", "array")
+    ],
+    [TypeNames.ANY, (env: Environment, val: Value) => val.evaluate(env, TypeNames.ANY)],
 ]);
 
 type Op = { type: TypeNames, argsCount: number, prior: number, calc: (...args: any[]) => any };
@@ -46,15 +49,29 @@ const unNumericalOps: { [key: string]: { prior: number, calc: (...args: any[]) =
 }
 
 const binLogOps: { [key: string]: { prior: number, calc: (...args: any[]) => any } } = {
-    "&&": { prior: 4, calc: (a, b) => a && b },
-    "||": { prior: 5, calc: (a, b) => a || b },
+    "&&": { prior: 9, calc: (a, b) => a && b },
+    "||": { prior: 10, calc: (a, b) => a || b },
+    "==": { prior: 8, calc: (a, b) => a == b },
+    "!=": { prior: 8, calc: (a, b) => a != b },
+    "<": { prior: 7, calc: (a, b) => a < b },
+    "<=": { prior: 7, calc: (a, b) => a <= b },
+    ">": { prior: 7, calc: (a, b) => a > b },
+    ">=": { prior: 7, calc: (a, b) => a >= b },
 }
 
 // other operations 
 const operations = new Map<string, Op>([
-    ["+", { type: TypeNames.ANY, argsCount: 2, prior: 5, calc: (a, b) => a + b }],
+    ["+", { type: TypeNames.PRIMITIVE, argsCount: 2, prior: 5, calc: (a, b) => a + b}],
     ["'+", { type: TypeNames.ANY, argsCount: 1, prior: 3, calc: a => a }],
-    ["'!", { type: TypeNames.BOOLEAN, argsCount: 1, prior: 3, calc: a => !a }]
+    ["'!", { type: TypeNames.BOOLEAN, argsCount: 1, prior: 3, calc: a => !a }],
+    // array kostil' 
+    [",", { type: TypeNames.ANY, argsCount: 2, prior: 13, calc: (a, b) => {
+        let arr = (a instanceof Array) ? a : [new Value(TypeNames.ANY, a)];
+        if (b instanceof Array)
+            arr.push(...b);
+        else arr.push(new Value(TypeNames.ANY, b));
+        return arr;
+    }}]
 ]);
 
 Object.entries(binNumericalOps).forEach(([key, value]) => 
@@ -125,12 +142,14 @@ export default class ExpressionBlock extends Block
 
         let i = 0, prefix = "'";
         while (i < nst.length) {
+            
             let curSt = "";
             // reading  operand
             while (/\w|["']/.test(nst[i]) && i < nst.length) {
                 curSt += nst[i++];
             }
             if (curSt) {
+                
                 result.push(parseIdentifier(env, curSt));
                 curSt = "", prefix = "";
             } 
@@ -141,10 +160,12 @@ export default class ExpressionBlock extends Block
             let opName = "", j = i;
             while (!/\w/.test(nst[j]) && j < nst.length) {
                 curSt += nst[j++];
+                
                 if (operations.has(curSt)) {
                     opName = curSt;
                 }
             }
+            
             i += opName.length;
 
             const op = operations.get(prefix + opName);
@@ -153,13 +174,14 @@ export default class ExpressionBlock extends Block
                     case "(":
                         // function execution   don't work
                         if (prefix === "") {
-                            const argsEnum = calcEnum(i, ")")
-                            i = argsEnum.end;
-                            result.push(argsEnum.result);
-
-                            pushOp({type: TypeNames.ANY, prior: 1, argsCount: 2, calc: (funcVal, args) => 
-                                funcVal.evaluate(env, TypeNames.FUNCKBLOCK, true).execute(env, args)
-                            });
+                            pushOp({type: TypeNames.ANY, prior: 1, argsCount: 2, calc: (func, args) => {
+                                
+                                return func.execute(env, args).evaluate(env, TypeNames.ANY);
+                            }});
+                            result.push(new Value(TypeNames.ARRAY, []));
+                            stack.push("(", operations.get(","));
+                            prefix = "'";
+                            ++i;
                         } else {
                             stack.push("("), ++i;
                             prefix = "'";
@@ -169,16 +191,16 @@ export default class ExpressionBlock extends Block
                     case "[":
                         // array indexing 
                         if (prefix === "") {
-                            pushOp({type: TypeNames.ANY, prior: 1, argsCount: 2, calc: (arrVal, indexVal) => 
-                                arrVal.evaluate(env, TypeNames.ARRAY, true)[indexVal.evaluate(env, TypeNames.NUMBER)]
-                            });
-                            stack.push("["); ++i;
-                            prefix = "'";
-                        } else { // array literals      don't work
-                            const arrEnum = calcEnum(i, "]");
-                            i = arrEnum.end;
-                            result.push(new Value(TypeNames.ARRAY, arrEnum.result));
-                        }
+                            pushOp({type: TypeNames.ANY, prior: 1, argsCount: 2, calc: (arr, index) => {
+                                if (index && arr instanceof Array) {
+                                    return (arr[index] 
+                                        ?? RuntimeError.throwIndexError(env)).evaluate(env, TypeNames.ANY);
+                                } 
+                                else RuntimeError.throwInvalidExpression(env);
+                            }});
+                        } 
+                        stack.push("["); ++i;
+                        prefix = "'";
                         break;
 
                     case ")":
@@ -192,13 +214,14 @@ export default class ExpressionBlock extends Block
                         break;
                 
                     default:
+                        
                         RuntimeError.throwInvalidExpression(env);
                 }
             } else if (!op) {
                 RuntimeError.throwInvalidExpression(env);
             } else {
                 pushOp(op);
-                prefix = "'";
+                if (opName !== "!") prefix = "'";
             }
         }
 
@@ -222,11 +245,16 @@ export default class ExpressionBlock extends Block
 
                 const caster = casters.get(op.type);
                 for (let j = 0; j < op.argsCount; ++j) {
-                    args = [caster ? caster(env, stack.pop()) : stack.pop(), ...args];
-                }
+                    const arg = caster ? caster(env, stack.pop()) : stack.pop();
+                    
+                    if (arg === undefined) RuntimeError.throwInvalidExpression(env);
+                    else args = [arg, ...args];
+                };
+                
                 stack.push(new Value(op.type, op.calc(...args)));
             }
         }
+        
         return stack[0]; 
     }
 }

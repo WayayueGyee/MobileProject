@@ -60,6 +60,10 @@ export class RuntimeError extends Error
         error.name = "ArgumentError";
         throw error;
     }
+
+    static throwIndexError(env: Environment): never {
+        throw new RuntimeError(env, "Invalid index");
+    }
 }
 
 export class CompilationError extends Error
