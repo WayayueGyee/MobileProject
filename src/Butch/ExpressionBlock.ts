@@ -26,7 +26,7 @@ const casters = new Map<TypeNames, Function>([
     [TypeNames.PRIMITIVE, (env: Environment, val: Value) => 
         val.getType() === TypeNames.ANY || Math.abs(val.getType() - TypeNames.PRIMITIVE) < 1000 ? 
             val.evaluate(env, TypeNames.ANY) 
-            : RuntimeError.throwTypeError(env, "primitive", "array")
+            : RuntimeError.throwTypeError(env.curBlock, "primitive", "array")
     ],
     [TypeNames.ANY, (env: Environment, val: Value) => val.evaluate(env, TypeNames.ANY)],
 ]);
@@ -125,7 +125,7 @@ export default class ExpressionBlock extends Block
                 result.push(stack.pop());
             }
             if (stack[stack.length - 1] === flag) stack.pop();
-            else RuntimeError.throwInvalidExpression(env);
+            else RuntimeError.throwInvalidExpression(env.curBlock);
         }
 
         let i = 0, prefix = "'";
@@ -182,9 +182,9 @@ export default class ExpressionBlock extends Block
                             pushOp({type: TypeNames.ANY, prior: 1, argsCount: 2, calc: (arr, index) => {
                                 if (index && arr instanceof Array) {
                                     return (arr[index] 
-                                        ?? RuntimeError.throwIndexError(env)).evaluate(env, TypeNames.ANY);
+                                        ?? RuntimeError.throwIndexError(env.curBlock)).evaluate(env, TypeNames.ANY);
                                 } 
-                                else RuntimeError.throwInvalidExpression(env);
+                                else RuntimeError.throwInvalidExpression(env.curBlock);
                             }});
                         } 
                         stack.push("["); ++i;
@@ -203,10 +203,10 @@ export default class ExpressionBlock extends Block
                 
                     default:
                         
-                        RuntimeError.throwInvalidExpression(env);
+                        RuntimeError.throwInvalidExpression(env.curBlock);
                 }
             } else if (!op) {
-                RuntimeError.throwInvalidExpression(env);
+                RuntimeError.throwInvalidExpression(env.curBlock);
             } else {
                 pushOp(op);
                 if (opName !== "!") prefix = "'";
@@ -235,7 +235,7 @@ export default class ExpressionBlock extends Block
                 for (let j = 0; j < op.argsCount; ++j) {
                     const arg = caster ? caster(env, stack.pop()) : stack.pop();
                     
-                    if (arg === undefined) RuntimeError.throwInvalidExpression(env);
+                    if (arg === undefined) RuntimeError.throwInvalidExpression(env.curBlock);
                     else args = [arg, ...args];
                 };
                 
