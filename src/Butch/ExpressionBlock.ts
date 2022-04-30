@@ -1,9 +1,8 @@
 // Darnger Zone :
 //      "govnina-code"
 
-import { Block, Environment, FuncBlock, TypeNames, Value } from "./base.js"
-import { DeclareBlock, InvokeBlock, ReturnBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
-import { Program } from "./Butch.js";
+import { Block, Environment, TypeNames, Value } from "./base.js"
+import { _dereferenceBlock, __consolelog } from "./blocks.js";
 import { RuntimeError } from "./errors.js"
 
 
@@ -127,17 +126,6 @@ export default class ExpressionBlock extends Block
             }
             if (stack[stack.length - 1] === flag) stack.pop();
             else RuntimeError.throwInvalidExpression(env);
-        }
-
-        function calcEnum(start: number, endFlag: string): {end: number, result: Value[]} {
-            let cur = start + 1;
-            while (nst[cur] !== ")" && cur < nst.length) ++cur;
-            const internalExps= nst.substring(i + 1, cur).split(",");
-
-            const internalBlocks = internalExps.map(exp => new ExpressionBlock(exp));
-            const result: Value[] = internalBlocks.map(block => block.execute(env));
-            
-            return {end: cur, result};
         }
 
         let i = 0, prefix = "'";

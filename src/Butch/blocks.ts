@@ -1,4 +1,4 @@
-import { FuncBlock, ScopeBlock, Block, Environment, Value, TypeNames, Signal, SignalTypes } from "./base.js";
+import { Block, Environment, Value, TypeNames, Signal, SignalTypes } from "./base.js";
 import RuntimeError from "./errors.js";
 import { verifyVariableName } from "./utils.js";
 
@@ -15,7 +15,7 @@ export class TextBlock extends Block
         this.text = text;
     }
 
-    protected logicsBody(env: Environment): Value {
+    protected override logicsBody(): Value {
         return new Value(TypeNames.STRING, this.text);
     }
 }

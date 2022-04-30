@@ -5,7 +5,7 @@ import ButchObj from "./ButchObj.js"
 import { Block } from "./base.js"
 
 export const syntaxCheck: Bch.Middleware = 
-    function(info: Bch.BlockInfo, app: Bch.ButchBuilder) {
+    function(info: Bch.BlockInfo) {
         if (info.obj.get("name") && !verifyVariableName(info.obj.get("name")) || 
             info.obj.get("nameSeq") && !info.obj.get("nameSeq").every(verifyVariableName)) 
         {
