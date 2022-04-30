@@ -228,7 +228,7 @@ export class FuncBlock extends ContainerBlock
         }
 
         try {
-            return super.execute(env);
+            return super.execute(argsEnv);
         } catch (e: any) {
             if (e.logEnv) e.logEnv(env)
             throw e;

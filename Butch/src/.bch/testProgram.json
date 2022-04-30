@@ -1,6 +1,6 @@
 { "type": "program", "content": [
         {
-            "type": "function", "name": "main", "nameSeq": ["a", "b"],
+            "type": "function", "name": "main",
             "content": [
                 {
                     "type": "declare", "name": "variable",
