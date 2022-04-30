@@ -18,13 +18,17 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "type": "log", "content": 
+                        [ {"type": "deref", "name": "fooRes" } ] 
                 }
             ]
         },
         {
             "type": "declare", "name": "globalOne",
             "content": [
-                { "type": "text", "value": "globalValue" }
+                { "type": "expression", "value": "100" }
             ]
         },
         {
@@ -38,7 +42,7 @@
                 },
                 {
                     "type": "return", "content": [
-                        { "type": "deref", "name": "variable" }
+                        { "type": "expression", "value": "variable + 1" }
                     ]
                 }
             ]

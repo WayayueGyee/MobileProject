@@ -37,7 +37,7 @@ export class Value
         {
             return this.value;
         } else {
-            RuntimeError.throwTypeError(env, TypeNames[expectedTypeName], TypeNames[this.typeName]);
+            RuntimeError.throwTypeError(env.curBlock, TypeNames[expectedTypeName], TypeNames[this.typeName]);
         }
     }
 
@@ -72,18 +72,15 @@ export class Signal
 
 export class Environment
 {
-    private localVariables: Map<string, Value>;
+    private localVariables: Map<string, Value> = new Map<string, Value>();
     
-    public parenEnv: Environment | undefined;
-    public readonly curScopeBlock: Block;
-    public curBlock: Block;
+    public readonly parenEnv: Environment | undefined;
     public signal: Signal = Signal.Default;
+    public curBlock: Block;
 
-    constructor(ScopeBlock: Block, parenEnv: Environment | undefined = undefined) {
-        this.curScopeBlock = ScopeBlock;
-        this.curBlock = ScopeBlock;
+    constructor(where: Block, parenEnv: Environment | undefined = undefined) {
         this.parenEnv = parenEnv;
-        this.localVariables = new Map<string, Value>();
+        this.curBlock = where;
     }
 
     private find(name: string): Value | undefined {
@@ -99,20 +96,20 @@ export class Environment
     }
 
     get(name: string): Value {
-        let value = this.find(name) ?? RuntimeError.throwUndefinedError(this, name);
+        let value = this.find(name) ?? RuntimeError.throwUndefinedError(this.curBlock, name);
         return value;
     }
 
     create(name: string, value: Value) {
         if (this.localVariables.has(name))  
-            RuntimeError.throwRedefineError(this, name);
+            RuntimeError.throwRedefineError(this.curBlock, name);
         
         this.localVariables.set(name, value);
     }
 
     assign(name: string, value: Value) {
         let variable = this.find(name);
-        variable?.assign(value) ?? RuntimeError.throwUndefinedError(this, name);
+        variable?.assign(value) ?? RuntimeError.throwUndefinedError(this.curBlock, name);
     }
 
     destriduteSignal() {
@@ -123,9 +120,25 @@ export class Environment
 
 export abstract class Block
 {
-    public _id: string = idv4();
-    public index: number = NaN;
+    public readonly id: string = idv4(); // (() => { const id = idv4(); console.log(id, "===", this); return id  })();
+    
     private content: Block[] = [];
+    
+    private _index : number = NaN;
+    public get index() : number {
+        return this._index;
+    }
+    public set index(v : number) {
+        this._index = v;
+    }
+
+    private _parent : Block | undefined = undefined;
+    public get parent() : Block | undefined {
+        return this._parent;
+    }
+    public set parent(v : Block | undefined) {
+        this._parent = v;
+    }
 
     protected abstract logicsBody(env : Environment): Value;
 
@@ -140,23 +153,35 @@ export abstract class Block
         return result;
     }
 
+    protected updateContent(begin: number, end: number): number[] {
+        const indexes = [];
+        for (let i = begin; i < end; ++i) {
+            indexes.push(i);
+            this.content[i].index = i;
+            this.content[i].parent = this;
+        }   
+        return indexes;
+    }
+
     public getContent(): Block[] {
         return [...this.content];
     }
 
-    public setContent(content: Block[]) {
+    /**
+     * @returns indexes in content of that blocks 
+     */
+    public setContent(content: Block[]): number[] {
         this.content = content;
-        for (let i = 0; i < this.content.length; ++i)
-            this.content[i].index = i;
+        return this.updateContent(0, content.length);
     }
 
-    public pushToContent(...blocks: Block[]) {
-        let index = this.content.length;
+    /**
+     * @returns indexes in content of that new blocks 
+     */
+    public pushToContent(...blocks: Block[]): number[] {
+        let oldLenght = this.content.length;
         const newLenght = this.content.push(...blocks);
-        for (; index < newLenght; ++index) {
-            this.content[index].index = index;
-        }
-
+        return this.updateContent(oldLenght, newLenght);
     }
 }
 
@@ -181,8 +206,7 @@ export abstract class ContainerBlock extends ScopeBlock
 
     constructor(internalBlocks: Array<Block> = []) {
         super();
-        this.setContent([...this.getContent(), ...internalBlocks]);
-        this.containerIndexes = internalBlocks.map(block => block.index);
+        this.containerIndexes = this.pushToContent(...internalBlocks);
     }
 
     protected logicsBody(env: Environment): Value {
@@ -221,7 +245,7 @@ export class FuncBlock extends ContainerBlock
 
     execute(env: Environment, args: Value[] = []): Value {
         if (args.length !== this.argNames.length) {
-            RuntimeError.throwArgumentError(env);
+            RuntimeError.throwArgumentError(this);
         }
 
         const argsEnv = new Environment(this, env);

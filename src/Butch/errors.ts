@@ -1,4 +1,4 @@
-import { Environment } from "./base.js"
+import { Block } from "./base.js"
 import * as Bch from "./Butch.js"
 
 export class RuntimeError extends Error
@@ -6,63 +6,61 @@ export class RuntimeError extends Error
     public blockIdStack: string[][] = [];
     public blockIndexStack: number[][] = [];
 
-    constructor(env: Environment, message: string) {
+    constructor(where: Block, message: string) {
         super(message);
         // this.stack = ""
-        this.logEnv(env);
+        this.logBlockLocation(where);
     }
 
-    logEnv(env: Environment) {
-        let curEnv: Environment | undefined = env;
-        const idFrame = [], indexFrame = [];
-        while (curEnv) {
-            this.stack += `\nIn Block ${curEnv.curBlock._id}`;
-            idFrame.push(curEnv.curBlock._id);
-            indexFrame.push(curEnv.curBlock.index);
-            curEnv = curEnv.parenEnv; 
+    logBlockLocation(where: Block) {
+        const indexFrame = [], idFrame = [];
+        let curBlock: Block | undefined = where;
+        while (curBlock?.parent) {
+            indexFrame.push(curBlock.index);
+            idFrame.push(curBlock.id);
+            curBlock = curBlock.parent;
         }
-
         this.blockIdStack.push(idFrame);
         this.blockIndexStack.push(indexFrame);
-    }
+    }    
 
-    static throwTypeError(env: Environment, expected: string, had: string): never {
-        let error = new RuntimeError(env, 
+    static throwTypeError(where: Block, expected: string, had: string): never {
+        let error = new RuntimeError(where, 
             `Expected ${expected}, but had ${had}`);
         error.name = "TypeError";
         throw error;
     } 
     
-    static throwIdentifierError(env: Environment, message: string): never {
-        let error = new RuntimeError(env, message);
+    static throwIdentifierError(where: Block, message: string): never {
+        let error = new RuntimeError(where, message);
         error.name = "IdentifierError";
         throw error;
     }
 
-    static throwInvalidNameError(env: Environment): never {
-        this.throwIdentifierError(env, "Invalid identifier name");
+    static throwInvalidNameError(where: Block): never {
+        this.throwIdentifierError(where, "Invalid identifier name");
     }
 
-    static throwUndefinedError(env: Environment, referenceName: string): never {
-        this.throwIdentifierError(env, `Symbol ${referenceName} is not defined`);
+    static throwUndefinedError(where: Block, referenceName: string): never {
+        this.throwIdentifierError(where, `Symbol ${referenceName} is not defined`);
     }
 
-    static throwRedefineError(env: Environment, referenceName: string): never {
-        this.throwIdentifierError(env, `Symbol ${referenceName} is already defined`);
+    static throwRedefineError(where: Block, referenceName: string): never {
+        this.throwIdentifierError(where, `Symbol ${referenceName} is already defined`);
     }
 
-    static throwInvalidExpression(env: Environment): never {
-        throw new RuntimeError(env, "Invalid expression syntax ");
+    static throwInvalidExpression(where: Block): never {
+        throw new RuntimeError(where, "Invalid expression syntax ");
     }
 
-    static throwArgumentError(env: Environment): never {
-        let error = new RuntimeError(env, "Invalid arguments");
+    static throwArgumentError(where: Block): never {
+        let error = new RuntimeError(where, "Invalid arguments");
         error.name = "ArgumentError";
         throw error;
     }
 
-    static throwIndexError(env: Environment): never {
-        throw new RuntimeError(env, "Invalid index");
+    static throwIndexError(where: Block): never {
+        throw new RuntimeError(where, "Invalid index");
     }
 }
 

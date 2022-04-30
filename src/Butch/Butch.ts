@@ -15,7 +15,6 @@ export class Program extends Block
 
     constructor() {
         super();
-        this.index = -1;
         this.globalEnv = new Environment(this);
     }
 
@@ -49,9 +48,8 @@ export class Program extends Block
         try {
             main = env.get("main").evaluate(env, TypeNames.FUNCKBLOCK, true);
         } catch(e) {
-            RuntimeError.throwIdentifierError(env, "Symbol 'main' must be defined as a function");
+            RuntimeError.throwIdentifierError(this, "Symbol 'main' must be defined as a function");
         }
-        env.curBlock = main;
         return main.execute(env);
     }
 
@@ -94,7 +92,7 @@ export class ButchBuilder
             [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
             [this.c.return, info => new ReturnBlock(info.obj.extention.builtContent[0])],
-            [this.c.__consolelog, info => new __consolelog(info.obj.extention.builtContent[0])]
+            [this.c.log, info => new __consolelog(info.obj.extention.builtContent[0])]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();

@@ -23,29 +23,36 @@ export class TextBlock extends Block
 export class InvokeBlock extends Block
 {
     public targetName: string;
-    public arguments: Array<Block>;
+    private argumentIndexes: number[];
 
     constructor(targetName: string = "", argumentBlocks: Array<Block> = []) 
     {
         super();
         this.targetName = targetName;
-        this.arguments = argumentBlocks;
-        this.pushToContent(...argumentBlocks);
+        this.argumentIndexes = this.pushToContent(...argumentBlocks);
     }
 
     protected logicsBody(env: Environment): Value {
         const target: any = env.get(this.targetName).evaluate(env, TypeNames.FUNCKBLOCK, true);
+        const content = this.getContent();
+        const args: Value[] = new Array<Value>(this.argumentIndexes.length);
 
-        const args: Value[] = new Array<Value>(this.arguments.length);
         for (let i = 0; i < args.length; ++i) {
-            args[i] = this.arguments[i].execute(env);
+            args[i] = content[i].execute(env);
         }
 
         return target.execute(env, args);
     }
 
     execute(env: Environment): Value {
-        return super.execute(env);
+        try {
+            return super.execute(env);
+        } catch(e: any) {
+            if (e.logBlockLocation) {
+                e.logBlockLocation(this);
+            }
+            throw e;
+        }
     }
 }
 
@@ -58,8 +65,7 @@ export class DeclareBlock extends Block
     {
         super();
         this.variableName = variableName;
-        this.pushToContent(initBlock);
-        this.initBlockIndex = initBlock.index;
+        this.initBlockIndex = this.pushToContent(initBlock)[0];
     }
 
     protected logicsBody(env: Environment): Value {
@@ -67,7 +73,7 @@ export class DeclareBlock extends Block
         const value: Value = content[this.initBlockIndex].execute(env);
 
         if (!verifyVariableName(this.variableName)) 
-            RuntimeError.throwInvalidNameError(env);
+            RuntimeError.throwInvalidNameError(this);
         
         env.create(this.variableName, value);
         return value;
@@ -97,13 +103,12 @@ export const BreakBlock = new (class extends Block {
 
 export class ReturnBlock extends Block 
 {
-    public outBlockIndex: number | undefined;
+    private outBlockIndex: number | undefined;
 
     constructor(outBlock: Block | undefined) {
         super();
         if (outBlock){
-            this.pushToContent(outBlock);
-            this.outBlockIndex = outBlock.index;
+            this.outBlockIndex = this.pushToContent(outBlock)[0];
         }
     }
 
@@ -117,16 +122,19 @@ export class ReturnBlock extends Block
 
 export class __consolelog extends Block 
 {
-    public target: Block;
+    private targetIndex: number;
 
     constructor(target: Block) {
         super();
-        this.pushToContent(target)
-        this.target = target;
+        this.targetIndex = this.pushToContent(target)[0];
     }
 
     protected logicsBody(env: Environment): Value {
-        console.log("//////////////////\n", this.target.execute(env), "\n//////////////////");
+        console.log(
+            "//////////////////\n", 
+            this.getContent()[this.targetIndex].execute(env), 
+            "\n//////////////////");
+
         return Value.Undefined;
     }
     

@@ -243,6 +243,6 @@ export default class ExpressionBlock extends Block
             }
         }
         
-        return stack[0]; 
+        return stack[0] ?? Value.Undefined; 
     }
 }
