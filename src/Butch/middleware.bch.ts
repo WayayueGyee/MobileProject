@@ -1,8 +1,8 @@
-import * as Bch from "./Butch.js"
-import { verifyVariableName } from "./utils.js"
-import { CompilationError } from "./errors.js"
-import ButchObj from "./ButchObj.js"
-import { Block } from "./base.js"
+import * as Bch from "./Butch"
+import { verifyVariableName } from "./utils"
+import { CompilationError } from "./errors"
+import ButchObj from "./ButchObj"
+import { Block } from "./base"
 
 export const syntaxCheck: Bch.Middleware = 
     function(info: Bch.BlockInfo) {

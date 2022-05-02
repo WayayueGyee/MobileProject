@@ -1,5 +1,5 @@
-import { Block } from "./base.js"
-import * as Bch from "./Butch.js"
+import { Block } from "./base"
+import * as Bch from "./Butch"
 
 export class RuntimeError extends Error
 {
@@ -49,8 +49,8 @@ export class RuntimeError extends Error
         this.throwIdentifierError(where, `Symbol ${referenceName} is already defined`);
     }
 
-    static throwInvalidExpression(where: Block): never {
-        throw new RuntimeError(where, "Invalid expression syntax ");
+    static throwInvalidExpression(where: Block, message: string = "no details"): never {
+        throw new RuntimeError(where, "Invalid expression syntax : " + message);
     }
 
     static throwArgumentError(where: Block): never {

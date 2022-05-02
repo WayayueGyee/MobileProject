@@ -1,4 +1,5 @@
-import RuntimeError from "./errors.js"
+import "react-native-get-random-values" // for uuid
+import RuntimeError from "./errors"
 import {v4 as idv4} from "uuid"
 
 export enum TypeNames
@@ -221,43 +222,5 @@ export abstract class ContainerBlock extends ScopeBlock
         }
 
         return Value.Undefined;
-    }
-}
-
-export class FuncBlock extends ContainerBlock
-{
-    public argNames: Array<string>;
-    
-    constructor(internalBlocks: Array<Block> = [], argNames: Array<string> = []) {
-        super(internalBlocks);
-        this.argNames = argNames;
-    }
-
-    protected logicsBody(env: Environment): Value {
-        super.logicsBody(env);
-        // console.log(env.signal);
-        if (env.signal.type === SignalTypes.RETURN) {
-            return env.signal.payload;
-        } else {
-            return Value.Undefined;
-        }
-    }
-
-    execute(env: Environment, args: Value[] = []): Value {
-        if (args.length !== this.argNames.length) {
-            RuntimeError.throwArgumentError(this);
-        }
-
-        const argsEnv = new Environment(this, env);
-        for (let i = 0; i < args.length; ++i) {
-            argsEnv.create(this.argNames[i], args[i]);
-        }
-
-        try {
-            return super.execute(argsEnv);
-        } catch (e: any) {
-            if (e.logEnv) e.logEnv(env)
-            throw e;
-        }
     }
 }

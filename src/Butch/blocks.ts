@@ -1,6 +1,7 @@
-import { Block, Environment, Value, TypeNames, Signal, SignalTypes } from "./base.js";
-import RuntimeError from "./errors.js";
-import { verifyVariableName } from "./utils.js";
+import { Block, Environment, Value, TypeNames, Signal, SignalTypes, ContainerBlock } from "./base";
+import ExpressionBlock from "./ExpressionBlock";
+import { verifyVariableName } from "./utils";
+import RuntimeError from "./errors";
 
 /**
  * placeholder | text input
@@ -17,6 +18,45 @@ export class TextBlock extends Block
 
     protected override logicsBody(): Value {
         return new Value(TypeNames.STRING, this.text);
+    }
+}
+
+
+export class FuncBlock extends ContainerBlock
+{
+    public argNames: Array<string>;
+    
+    constructor(internalBlocks: Array<Block> = [], argNames: Array<string> = []) {
+        super(internalBlocks);
+        this.argNames = argNames;
+    }
+
+    protected logicsBody(env: Environment): Value {
+        super.logicsBody(env);
+        // console.log(env.signal);
+        if (env.signal.type === SignalTypes.RETURN) {
+            return env.signal.payload;
+        } else {
+            return Value.Undefined;
+        }
+    }
+
+    execute(env: Environment, args: Value[] = []): Value {
+        if (args.length !== this.argNames.length) {
+            RuntimeError.throwArgumentError(this);
+        }
+
+        const argsEnv = new Environment(this, env);
+        for (let i = 0; i < args.length; ++i) {
+            argsEnv.create(this.argNames[i], args[i]);
+        }
+
+        try {
+            return super.execute(argsEnv);
+        } catch (e: any) {
+            if (e.logEnv) e.logEnv(env)
+            throw e;
+        }
     }
 }
 
@@ -69,11 +109,7 @@ export class DeclareBlock extends Block
     }
 
     protected logicsBody(env: Environment): Value {
-        const content = this.getContent();
-        const value: Value = content[this.initBlockIndex].execute(env);
-
-        if (!verifyVariableName(this.variableName)) 
-            RuntimeError.throwInvalidNameError(this);
+        const value: Value = this.getContent()[this.initBlockIndex].execute(env);
         
         env.create(this.variableName, value);
         return value;
@@ -138,4 +174,65 @@ export class __consolelog extends Block
         return Value.Undefined;
     }
     
+}
+
+export class SetBlock extends Block
+{
+    public leftValueIndex: number;
+    public rightBlockIndex: number;
+
+    constructor(leftValue: Block, rightValue: Block) {
+        super();
+        this.leftValueIndex = this.pushToContent(leftValue)[0];
+        this.rightBlockIndex = this.pushToContent(rightValue)[0];
+    }
+
+    protected logicsBody(env: Environment): Value {
+        const content = this.getContent();
+        const leftvalue: Value = content[this.leftValueIndex].execute(env);
+        const rightValue: Value = content[this.rightBlockIndex].execute(env);
+        
+        leftvalue.assign(rightValue);
+        return leftvalue;
+    }
+}
+
+export class WhileBlock extends ContainerBlock 
+{
+    private conditionIndex: number;
+
+    constructor(condition: ExpressionBlock, internalBlocks: Block[]) {
+        super(internalBlocks);
+        this.conditionIndex = this.pushToContent(condition)[0];
+    }
+
+    protected logicsBody(env: Environment): Value {
+        const condition = this.getContent()[this.conditionIndex];
+        
+        while (condition.execute(env).evaluate(env, TypeNames.BOOLEAN)) {
+            super.logicsBody(env);
+        }
+        return Value.Undefined;
+    }
+}
+
+export class ForBlock extends WhileBlock 
+{
+    private beforeIndex: number;
+    private afterIndex: number;
+
+    constructor(beforeLoopBlock: Block, condition: ExpressionBlock,
+        afterItBlock: Block, internalBlocks: Block[]) {
+        super(condition, internalBlocks);
+        this.beforeIndex = this.pushToContent(beforeLoopBlock)[0];
+        this.afterIndex = this.pushToContent(afterItBlock)[0];
+
+        this.containerIndexes.push(this.afterIndex);
+    }
+
+    protected logicsBody(env: Environment): Value {
+        const content = this.getContent();
+        content[this.beforeIndex].execute(env);
+        return super.logicsBody(env);
+    }
 }

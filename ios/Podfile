@@ -21,6 +21,10 @@ target 'MobileProject' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'react-native-multithreading', :path => '../node_modules/react-native-multithreading'
+
+  pod 'reactNativeHamsters', :path => '../node_modules/react-native-hamsters'
+
   target 'MobileProjectTests' do
     inherit! :complete
     # Pods for testing

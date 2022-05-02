@@ -1,13 +1,12 @@
-import { FuncBlock, Block, Environment, Value, TypeNames } from "./base.js"
-import { BreakBlock, DeclareBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks.js";
-import ExpressionBlock from "./ExpressionBlock.js"
-import { RuntimeError, CompilationError } from "./errors.js"; 
-import { createButchCodesFile } from "./utils.js";
-import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch.js"
-import ButchObj from "./ButchObj.js";
+import { Block, Environment, Value, TypeNames } from "./base"
+import { FuncBlock, BreakBlock, DeclareBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks";
+import ExpressionBlock from "./ExpressionBlock"
+import { RuntimeError, CompilationError } from "./errors"; 
+import { createButchCodesFile } from "./utils";
+import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch"
+import ButchObj from "./ButchObj";
 
-import * as fs from "fs"
-import _path from "path"
+import * as rnfs from "react-native-fs"
 
 export class Program extends Block
 {
@@ -113,41 +112,29 @@ export class ButchBuilder
         this.middlewares.push(middleware);
     }
 
-    saveButchCodes(pathToButchDir: string) {
+    saveButchCodes(newName: string | undefined = undefined) {
         const keys = Object.keys(this.c)
         let codesSet: string = keys[0];
         for (let i = 1; i < keys.length; ++i) {
             codesSet += "\n" + keys[i];
         }
 
-        const pathToCodesSet = _path.join(pathToButchDir, "ButchCodesSet.txt");
-        fs.writeFile(pathToCodesSet, codesSet, () => {
-            createButchCodesFile(pathToCodesSet, pathToButchDir);
-        });
+        const pathToCodesSet = rnfs.DocumentDirectoryPath + `/.bch/${newName ?? "codes"}.set.txt`;
+        return rnfs.writeFile(pathToCodesSet, codesSet).then(() => {
+            createButchCodesFile(codesSet.split("\n"), rnfs.DocumentDirectoryPath + `/.bch/${newName ?? "codes"}.json`);
+        })
     }
 
     /**
      * only for testing
+     * brutely encode named program's string
      */
-    encodeNamedProgram(path: string, callback: (e: Error | null) => void) {
-        fs.readFile(path, (err, data) => {
-            if (err) throw err;
-            else {
-                let program = data.toString();
-                
-                Object.entries(this.c).forEach(([key, value]) => {
-                    program = program.replace(new RegExp("\"" + key + "\"", "g"),
-                        "\"" + value.toString() + "\"");
-                    });
-
-                fs.writeFile(
-                    _path.join(_path.dirname(path), 
-                        _path.basename(path).split(".")[0] + ".bch"), 
-                    program.replace(new RegExp("[ \n\r]*", "g"), ""), 
-                    callback
-                );
-            }
-        })
+    encodeNamedProgram(namedProg: string): string {
+        Object.entries(this.c).forEach(([key, value]) => {
+            namedProg = namedProg.replace(new RegExp("\"" + key + "\"", "g"),
+                "\"" + value.toString() + "\"");
+        });
+        return namedProg.replace(new RegExp("[ \n\r]+", "g"), "");
     }
 
     private execMiddlewares(info: BlockInfo) {

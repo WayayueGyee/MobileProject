@@ -80,7 +80,7 @@
     ".eslintrc.js",
     ".prettirerrc.js",
     "metro.config.cjs",
-    "jest.config.js",
+    "jest.config.cjs",
     "index.js",
     "src/app/App.js"
   ],

@@ -1,0 +1,26 @@
+{ "type": "program", "content": [
+        {
+            "type": "function", "name": "main",
+            "content": [
+                {
+                    "type": "declare", "name": "qqqqq",
+                    "content": [
+                        { "type": "expression", "value": "foo() + 'QWE'" }
+                    ]
+                },
+                {
+                    "type": "log", "content": 
+                        [ {"type": "deref", "name": "qqqqq" } ] 
+                }
+            ]
+        },
+        {
+            "type": "function", "name": "foo", "nameSeq": [],
+            "content": [{
+                "type": "return", "content": [{
+                    "type": "expression", "value": "'texttexttexttexttexttexttexttext'"
+                }]
+            }]
+        }
+    ]
+}
