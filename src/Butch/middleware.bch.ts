@@ -24,6 +24,6 @@ export const prebuildInternalBlocks: Bch.Middleware =
                 newContent[i] = app.buildBlock(
                     {obj: new ButchObj(content[i], info.obj.codes), location: info.location.concat(i)});
             }
-            info.obj.extention.builtContent = newContent;
+            info.obj.extension .builtContent = newContent;
         } 
     }

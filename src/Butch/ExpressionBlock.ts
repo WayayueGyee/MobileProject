@@ -291,8 +291,6 @@ export default class ExpressionBlock extends Block
 
     protected logicsBody(env: Environment): Value {
         const parsed = this.parsed ? this.parsed : this.parsed = this.parseExpression(env);
-        // console.log("parsed ", parsed);
-    
         const stack: Value[] = [];
         for (let i = 0; i < parsed.length; ++i) {
             if (parsed[i] instanceof Value) {

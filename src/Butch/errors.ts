@@ -8,7 +8,7 @@ export class RuntimeError extends Error
 
     constructor(where: Block, message: string) {
         super(message);
-        // this.stack = ""
+        this.stack = ""; // comment this to see normal error call stack
         this.logBlockLocation(where);
     }
 
@@ -82,6 +82,10 @@ export class CompilationError extends Error
 
     static throwUnknownBlock(info: Bch.BlockInfo): never {
         throw new CompilationError("Unknown Block", info);  
+    }
+
+    static throwInvalidFile(message: string = ""): never {
+        throw new CompilationError("Invalid compiling file; " + message);
     }
 }
 

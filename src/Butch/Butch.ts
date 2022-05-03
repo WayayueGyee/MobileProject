@@ -43,11 +43,9 @@ export class Program extends Block
             node = node.getContent()[path[i]];
         }        
         
-        console.log(node);
         const content = node.getContent();
         content[path[path.length - 1]] = newBlock;
         node.setContent(content);
-        console.log(node);
     }
 
     protected logicsBody(env: Environment): Value {
@@ -98,8 +96,8 @@ export class ButchBuilder
             [this.c.text, info => new TextBlock(info.obj.get("value"))],
             [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
-            [this.c.return, info => new ReturnBlock(info.obj.extention.builtContent[0])],
-            [this.c.log, info => new __consolelog(info.obj.extention.builtContent[0])]
+            [this.c.return, info => new ReturnBlock(info.obj.extension .builtContent[0])],
+            [this.c.log, info => new __consolelog(info.obj.extension .builtContent[0])]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();
@@ -153,15 +151,15 @@ export class ButchBuilder
 
     // style 1 of builder : private prorety 
     private buildDeclare = (info: BlockInfo): DeclareBlock => {
-        return new DeclareBlock(info.obj.get("name"), info.obj.extention.builtContent[0]);
+        return new DeclareBlock(info.obj.get("name"), info.obj.extension .builtContent[0]);
     }
 
     private buildInvoker: Builder = (info: BlockInfo): Block => {
-        return new InvokeBlock(info.obj.get("name"), info.obj.extention.builtContent);
+        return new InvokeBlock(info.obj.get("name"), info.obj.extension .builtContent);
     }
 
     private buildFunction = (info: BlockInfo): FuncBlock => {
-        return new FuncBlock(info.obj.extention.builtContent, info.obj.get("nameSeq"));
+        return new FuncBlock(info.obj.extension .builtContent, info.obj.get("nameSeq"));
     }
 
     buildBlock(info: BlockInfo): Block {
@@ -179,7 +177,7 @@ export class ButchBuilder
 
     build(programObj: ButchObj): Program {
         const prog = new Program(); 
-        const content = programObj.content();
+        const content = programObj.content() ?? CompilationError.throwInvalidFile();
 
         for (let i = 0; i < content.length; ++i) {
             const info: BlockInfo = 
@@ -189,7 +187,7 @@ export class ButchBuilder
 
             switch (content[i][this.c.type]) {
                 case this.c.function:
-                    prog.useFunction(content[i][this.c.name], this.buildFunction(info));
+                    prog.useFunction(String(content[i][this.c.name]), this.buildFunction(info));
                     break;
                 
                 case this.c.declare:
@@ -206,7 +204,6 @@ export class ButchBuilder
     rebuild(prog: Program, programObj: ButchObj, targetPathes: number[][]) {
         targetPathes.forEach(path => {
             const block = this.buildBlock({obj: programObj.goTo(...path), location: path });
-            console.log(block);
             prog.setBlock(block, path)
         });
     }

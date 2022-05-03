@@ -33,7 +33,6 @@ export class FuncBlock extends ContainerBlock
 
     protected logicsBody(env: Environment): Value {
         super.logicsBody(env);
-        // console.log(env.signal);
         if (env.signal.type === SignalTypes.RETURN) {
             return env.signal.payload;
         } else {

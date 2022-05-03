@@ -38,7 +38,8 @@ export class Value
         {
             return this.value;
         } else {
-            RuntimeError.throwTypeError(env.curBlock, TypeNames[expectedTypeName], TypeNames[this.typeName]);
+            RuntimeError.throwTypeError(env.curBlock, 
+                TypeNames[expectedTypeName], TypeNames[this.typeName]);
         }
     }
 
@@ -63,7 +64,8 @@ export class Signal
     public type: SignalTypes;
     public payload: Value;
 
-    constructor(type: SignalTypes = SignalTypes.NULL, payload: Value = Value.Undefined) {
+    constructor(type: SignalTypes = SignalTypes.NULL, 
+        payload: Value = Value.Undefined) {
         this.type = type;
         this.payload = payload;
     }
@@ -97,7 +99,8 @@ export class Environment
     }
 
     get(name: string): Value {
-        let value = this.find(name) ?? RuntimeError.throwUndefinedError(this.curBlock, name);
+        let value = this.find(name) 
+            ?? RuntimeError.throwUndefinedError(this.curBlock, name);
         return value;
     }
 
@@ -110,7 +113,8 @@ export class Environment
 
     assign(name: string, value: Value) {
         let variable = this.find(name);
-        variable?.assign(value) ?? RuntimeError.throwUndefinedError(this.curBlock, name);
+        variable?.assign(value) 
+            ?? RuntimeError.throwUndefinedError(this.curBlock, name);
     }
 
     destriduteSignal() {
@@ -121,7 +125,7 @@ export class Environment
 
 export abstract class Block
 {
-    public readonly id: string = idv4(); // (() => { const id = idv4(); console.log(id, "===", this); return id  })();
+    public readonly id: string = idv4(); 
     
     private content: Block[] = [];
     
@@ -144,12 +148,10 @@ export abstract class Block
     protected abstract logicsBody(env : Environment): Value;
 
     execute(env : Environment): Value {
-        const prevBlock = env.curBlock  // kostil'?
+        const prevBlock = env.curBlock;
         env.curBlock = this;
         const result = this.logicsBody(env);
         env.curBlock = prevBlock;
-
-        // console.log("Executed ", this._id, this.constructor, " result ", result);
         
         return result;
     }
@@ -211,12 +213,9 @@ export abstract class ContainerBlock extends ScopeBlock
     }
 
     protected logicsBody(env: Environment): Value {
-        // console.log("\t\tInto container ", this._id);
         const content = this.getContent();
 
-        for (let i = 0; i < this.containerIndexes.length; ++i) {
-            // console.log("\tExec : ", content[this.containerIndexes[i]]._id);
-            
+        for (let i = 0; i < this.containerIndexes.length; ++i) {    
             content[this.containerIndexes[i]].execute(env);
             if (env.signal.type !== SignalTypes.NULL) break;
         }

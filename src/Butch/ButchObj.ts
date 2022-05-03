@@ -2,11 +2,15 @@
  * wraper of encoded object
  * gives easier interaction with it
  */
+export type B_ObjPayload = string | string[] | B_Obj[];
+export type B_Obj = { [key: string]: B_ObjPayload };
+
 export default class ButchObj
 {
-    public data: {[key: string]: any};
+    public data: B_Obj;
     public codes: {[key: string]: string};
-    public extention: {[key: string]: any} = {};
+    // any extension your middleware could apply
+    public extension : {[key: string]: any} = {};
 
     constructor(obj: {[key: string]: any}, codes: {[key: string]: string}) {
         this.codes = codes;
@@ -16,13 +20,16 @@ export default class ButchObj
     /**
     * recursive ButchObj finder 
     */
-    static goToNode(obj: {[key: string]: any}, path: number[],
-       codes: {[key: string]: string}) : {[key: string]: any} | undefined   
+    static goToNode(obj: B_Obj, path: number[],
+       codes: {[key: string]: string}) : B_Obj | undefined   
     {
-        let node = obj;
+        let node: any = obj;
         for (let i = 0; i < path.length; ++i) {
-           if (!node[codes.content]) return undefined;
-           node = node[codes.content][path[i]];
+            if (!(node[codes.content] instanceof Array)) {
+               return undefined;
+            } else {
+                node = node[codes.content][path[i]];
+            } 
         }
         return node
     }
@@ -31,20 +38,20 @@ export default class ButchObj
         return this.data[this.codes[key]];
     }
 
-    content(): {[key: string]: any}[] {
-        return this.data[this.codes.content];
+    content(): B_Obj[] | undefined {
+        const content: any = this.data[this.codes.content]
+        return content instanceof Array ? content : undefined;
     }
 
-    set(key: string, value: string | {[key: string]: any}[]) {
+    set(key: string, value: B_ObjPayload) {
         this.data[this.codes[key]] = value;
     }
 
     goTo(...indexes: number[]): ButchObj {
         const obj = ButchObj.goToNode(this.data, indexes, this.codes)
         if (!obj) {
-            throw Error("Invalid path to find block")
+            throw Error("Invalid path to find block");
         }
-        this.goTo(1, 2, 3, 4, 5)
         return new ButchObj(obj, this.codes);
     }
 }
