@@ -1,5 +1,13 @@
 import { Block, Environment, Value, TypeNames } from "./base"
-import { FuncBlock, BreakBlock, DeclareBlock, InvokeBlock, ReturnBlock, TextBlock, _dereferenceBlock, __consolelog } from "./blocks";
+import { 
+    FuncBlock, 
+    BreakBlock, 
+    DeclareBlock, 
+    InvokeBlock, 
+    ReturnBlock, 
+    TextBlock, 
+    _dereferenceBlock, __consolelog 
+} from "./blocks";
 import ExpressionBlock from "./ExpressionBlock"
 import { RuntimeError, CompilationError } from "./errors"; 
 import { createButchCodesFile } from "./utils";
