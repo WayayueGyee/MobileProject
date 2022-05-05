@@ -262,6 +262,9 @@ android {
 }
 
 dependencies {
+    // implementation "com.reactnativemultithreading.MultithreadingJSIModulePackage"
+    // implementation "com.facebook.react.bridge.JSIModulePackage"
+    
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion

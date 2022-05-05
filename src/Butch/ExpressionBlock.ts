@@ -38,7 +38,7 @@ const casters = new Map<TypeNames, Function>([
 
 type Op = { type: TypeNames, argsCount: number, prior: number, 
     rightSide?: boolean,
-    name?: string,
+    symbol?: string,
     calc: (...args: any[]) => any };
 
 const binNumericalOps: { [key: string]: 
@@ -81,8 +81,9 @@ const operations = new Map<string, Op>([
     ["+", { type: TypeNames.PRIMITIVE, argsCount: 2, prior: 5, calc: (a, b) => a + b}],
     ["'+", { type: TypeNames.ANY, argsCount: 1, prior: 3, calc: a => a }],
     ["'!", { type: TypeNames.BOOLEAN, argsCount: 1, prior: 3, calc: a => !a }],
+    ["=", { type: TypeNames.VALUE, argsCount: 2, prior: 12, calc: (a, b) => a.assign(b) }],
     // array kostil' 
-    [",", { type: TypeNames.ANY, argsCount: 2, prior: 13, name: ",", rightSide: true,
+    [",", { type: TypeNames.ANY, argsCount: 2, prior: 13, symbol: ",", rightSide: true,
         // deprecated 
         calc: (a, b) => {
             console.warn("Used deprecated comma behavior in expressions");
@@ -127,7 +128,7 @@ const useIndexOp = (env: Environment): Op =>{;
 } 
 
 const useArrayCreateOp = (size: number): Op => {
-    return { type: TypeNames.ARRAY, name: "[]", prior: 13,
+    return { type: TypeNames.ARRAY, symbol: "[]", prior: 13,
         argsCount: size, calc: (...args: Value[]) => args || [] }
 } 
 
@@ -182,8 +183,8 @@ export default class ExpressionBlock extends Block
             const newStack: (Op | any)[] = []
             let count = 0, emptyArr = false;
             for (let i = 0; i < stack.length; ++i) {
-                if (stack[i].name == ",") ++count;
-                else if (stack[i].name === "[]") {
+                if (stack[i].symbol == ",") ++count;
+                else if (stack[i].symbol === "[]") {
                     emptyArr = stack[i].argsCount === 0;
                     count += stack[i].argsCount;
                 } else {

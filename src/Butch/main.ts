@@ -22,7 +22,7 @@ function manualTest() {
     const decVar = new B.DeclareBlock("var", new ExpressionBlock("0"));
     const forLoop = new B.ForBlock(
         new B.DeclareBlock("i", new ExpressionBlock("0")),
-        new ExpressionBlock("i < 100"),
+        new ExpressionBlock("i < 10000"),
         new B.SetBlock(new ExpressionBlock("i"), new ExpressionBlock("i + 1")),
         [new B.SetBlock(new ExpressionBlock("var"), new ExpressionBlock("var + i"))]
     )

@@ -1,6 +1,5 @@
 import { Block, Environment, Value, TypeNames, Signal, SignalTypes, ContainerBlock } from "./base";
 import ExpressionBlock from "./ExpressionBlock";
-import { verifyVariableName } from "./utils";
 import RuntimeError from "./errors";
 
 /**
@@ -182,8 +181,8 @@ export class SetBlock extends Block
 
     constructor(leftValue: Block, rightValue: Block) {
         super();
-        this.leftValueIndex = this.pushToContent(leftValue)[0];
-        this.rightBlockIndex = this.pushToContent(rightValue)[0];
+        [this.leftValueIndex, this.rightBlockIndex] = 
+            this.pushToContent(leftValue, rightValue);
     }
 
     protected logicsBody(env: Environment): Value {
@@ -223,8 +222,8 @@ export class ForBlock extends WhileBlock
     constructor(beforeLoopBlock: Block, condition: ExpressionBlock,
         afterItBlock: Block, internalBlocks: Block[]) {
         super(condition, internalBlocks);
-        this.beforeIndex = this.pushToContent(beforeLoopBlock)[0];
-        this.afterIndex = this.pushToContent(afterItBlock)[0];
+        [this.beforeIndex, this.afterIndex] = 
+            this.pushToContent(beforeLoopBlock, afterItBlock);
 
         this.containerIndexes.push(this.afterIndex);
     }
@@ -233,5 +232,39 @@ export class ForBlock extends WhileBlock
         const content = this.getContent();
         content[this.beforeIndex].execute(env);
         return super.logicsBody(env);
+    }
+}
+
+export class IfBlock extends Block
+{
+    private conditionIndex: number;
+    private ifContainerIndex: number;
+    private elseContainerIndex: number | undefined;
+
+    constructor(condition: ExpressionBlock,
+        ifBlock: Block, elseBlock: ContainerBlock | undefined = undefined) {
+        super();
+        // this.conditionIndex = this.pushToContent(condition)[0];
+        // this.ifContainerIndex = this.pushToContent(ifContainer)[0];
+        // this.elseContainerIndex = this.pushToContent(elseContainer)[0];
+
+        [this.conditionIndex, this.ifContainerIndex] =
+            this.pushToContent(condition, ifBlock);
+            
+        if (elseBlock)
+            this.elseContainerIndex = this.pushToContent(elseBlock)[0];
+    }
+
+    protected logicsBody(env: Environment): Value {
+        const content = this.getContent()
+
+        if (content[this.conditionIndex].execute(env)) {
+            content[this.ifContainerIndex].execute(env);
+        } 
+        else if (this.elseContainerIndex) {
+            content[this.ifContainerIndex].execute(env);
+        }
+
+        return Value.Undefined;
     }
 }

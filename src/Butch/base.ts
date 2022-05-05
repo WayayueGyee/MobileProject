@@ -6,15 +6,18 @@ export enum TypeNames
 {
     UNDEFINED = -Infinity,
     ANY = 0,
-    PRIMITIVE = 1000,
-    NUMBER = 1001, // primitives
+
+    PRIMITIVE = 1000, 
+    NUMBER = 1001, 
     STRING = 1002,
     BOOLEAN = 1003,
-    BLOCK = 2000, // blocks
+
+    BLOCK = 2000, 
     SCOPEBLOCK = 2001,
     FUNCKBLOCK = 2002,
 
     ARRAY = 3001,    
+    VALUE = 4001
 }
 
 export class Value 
@@ -29,12 +32,15 @@ export class Value
         this.typeName = typeName;
     }
 
+    public static isCompatible(type1: TypeNames, type2: TypeNames, strict: boolean = false): boolean {
+        return type1 === TypeNames.ANY || type2 === TypeNames.ANY ||
+            (!strict && 1000 > Math.abs(type1 - type2) || strict && type1 === type2);
+    }
+
     evaluate(env: Environment, expectedTypeName: TypeNames,
         strict: boolean = false) : Object
     {
-        if (this.typeName === TypeNames.ANY || expectedTypeName === TypeNames.ANY ||
-            (!strict && 1000 > Math.abs(this.typeName - expectedTypeName) ||
-            strict && this.typeName === expectedTypeName)) 
+        if (Value.isCompatible(this.typeName, expectedTypeName, strict)) 
         {
             return this.value;
         } else {
@@ -47,9 +53,10 @@ export class Value
         return this.typeName;
     }
 
-    assign(value: Value) {
+    assign(value: Value): Value {
         this.value = value.value;
         this.typeName = value.typeName;
+        return this;
     }
 }
 
