@@ -14,6 +14,10 @@ import com.mobileproject.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+// try to use react-native-multithreading
+// import com.reactnativemultithreading.MultithreadingJSIModulePackage;
+// import com.facebook.react.bridge.JSIModulePackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -31,6 +35,12 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
           return packages;
         }
+        // @Override
+        // protected List<ReactPackage> getPackages() {
+        //   return Arrays.<ReactPackage>asList(
+        //     new MainReactPackage()
+        //   );
+        // }
 
         @Override
         protected String getJSMainModuleName() {
