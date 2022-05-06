@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { StyleSheet, FlatList, View, Text, TouchableOpacity } from "react-native";
+import { FlatList, View, Text, TouchableOpacity } from "react-native";
 import blocksState from "../Data/blocksState"; 
 import {RenderObj} from "./RenderObj";
+import { useTheme, makeStyles } from '@rneui/themed';
 
 export const BlocksList: React.FC = () => {
   const [show, setShow] = useState(false);
   const [state, setState] = useState(<RenderObj/>);
   const block: any = blocksState;
+  const { theme } = useTheme();
+  const styles = useStyles(theme);
   
   const onPressEvent = (id: number | string, type: string) => {
     block[id] = {
@@ -23,7 +26,7 @@ export const BlocksList: React.FC = () => {
   }
 
   return (
-    <View>
+    <View style={styles.commonView}>
       <View style={styles.view}>
         <TouchableOpacity onPress={() => setShow(!show)}>
           <Text>menu</Text>
@@ -49,7 +52,11 @@ export const BlocksList: React.FC = () => {
   )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
+  commonView: {
+    backgroundColor: theme.colors?.grey0
+  },
+
   view: {
     width: '30%'
   },
@@ -65,4 +72,4 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18
   }
-})
+}));

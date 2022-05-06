@@ -2,6 +2,7 @@ import React  from "react";
 import { TextInput, View} from "react-native";
 import { FuncBlock } from "./FuncBlock";
 import { DeclBlock } from "./DeclBlock";
+import { NameBlock } from "./NameBlock";
 import { useTheme, makeStyles } from '@rneui/themed';
 import state from '../Data/blocksState';
 
@@ -18,7 +19,7 @@ export const RenderObj: React.FC = () => {
                         case "function": {
                             return (
                                 <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
+                                    <NameBlock text={value.name} keys={[key]}/>
                                     <FuncBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
@@ -27,7 +28,7 @@ export const RenderObj: React.FC = () => {
                         case "declare": {
                             return (
                                 <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
+                                    <NameBlock text={value.name} keys={[key]}/>
                                     <DeclBlock content={value.content} keys={[key]}/>
                                 </View>
                             )

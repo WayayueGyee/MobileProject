@@ -1,8 +1,9 @@
 import React from 'react';
-import { TextInput, View} from "react-native";
+import { View } from "react-native";
 import {FuncBlock} from "./FuncBlock";
 import {InpBlock} from "./InpBlock";
 import { useTheme, makeStyles } from '@rneui/themed';
+import { NameBlock } from './NameBlock';
 
 export type Props = {
     keys: Array<number | string>,
@@ -23,7 +24,7 @@ export const DeclBlock: React.FC<Props> = ({
                         case "function": {
                             return (
                                 <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
+                                    <NameBlock text={value.name} keys={[...keys, key]}/>
                                     <FuncBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
@@ -32,7 +33,7 @@ export const DeclBlock: React.FC<Props> = ({
                         case "declare": {
                             return (
                                 <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
+                                    <NameBlock text={value.name} keys={[...keys, key]}/>
                                     <DeclBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )

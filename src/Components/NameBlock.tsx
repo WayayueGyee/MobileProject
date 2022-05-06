@@ -1,46 +1,42 @@
 import React, {useState} from 'react'
-import { TextInput, View} from "react-native";
+import { TextInput } from "react-native";
 import { StateAPI } from '../DataController/blockStateAPI';
 import { makeStyles, useTheme } from '@rneui/themed';
 
 export type Props = {
-    value: string | undefined;
+    text: string | undefined;
     keys: Array<number | string>;
 }
 
-export const InpBlock: React.FC<Props> = ({
-    value,
+export const NameBlock: React.FC<Props> = ({
+    text,
     keys
 }) => {
-    const [inputValue, setInputValue] = useState(value);
+    const [inputValue, setInputValue] = useState(text);
     const { theme } = useTheme();
     const styles = useStyles(theme);
 
     const changeText = (text: string) => {
         setInputValue(text);
         let keysCopy = [...keys];
-        StateAPI.changeValue(keysCopy, text);
+        StateAPI.changeName(keysCopy, text);
     }
 
     return (
-        <View style={styles.container}>
+        <>
             <TextInput style={styles.input} onChangeText={(text) => changeText(text)} value={inputValue}/>
-        </View>
+        </>
     )
 }
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        backgroundColor: theme.colors?.primary,
-        borderRadius: 10,
-        marginLeft: 10,
-        marginRight: 10
-    },
-
     input: {
+        backgroundColor: theme.colors?.warning,
         color: theme.colors?.white,
+        marginLeft: 10,
+        marginRight: 10,
         minWidth: 50,
         borderRadius: 10,
         fontSize: 16
-    },
+    }
 }))
