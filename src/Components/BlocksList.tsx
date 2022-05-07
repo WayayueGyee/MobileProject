@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, View, Text, TouchableOpacity, TextInput } from "react-native";
 import { useTheme, makeStyles, Icon, Button } from '@rneui/themed';
 import blocksState from "../Data/blocksState"; 
@@ -6,7 +6,6 @@ import { RenderObj } from "./RenderObj";
 
 export const BlocksList: React.FC = () => {
   const [isVisible, setVisible] = useState(false);
-  const [state, setState] = useState(<RenderObj/>);
 
   const [blockType, setBlockType] = useState('');
   const [blockName, setBlockName] = useState('');
@@ -26,13 +25,13 @@ export const BlocksList: React.FC = () => {
         }
       }
     }
+  }
 
+  useEffect(() => {
     setBlockName('');
     setBlockValue('');
-
     console.log(block);
-    setState(<RenderObj/>);
-  }
+  }, [block])
 
   return (
     <View style={isVisible ? styles.darkCommonView : styles.commonView}>
@@ -78,7 +77,7 @@ export const BlocksList: React.FC = () => {
           />
         </View>
       </Modal>
-      {state}
+      <RenderObj/>
     </View>
   )
 }
