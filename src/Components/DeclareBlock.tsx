@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from "react-native";
 import { useTheme, makeStyles } from '@rneui/themed';
-import { FuncBlock } from "./FuncBlock";
-import { InpBlock } from "./InpBlock";
+import { FunctionBlock } from "./FunctionBlock";
+import { InputBlock } from "./InputBlock";
 import { NameBlock } from './NameBlock';
 
 export type Props = {
@@ -10,7 +10,7 @@ export type Props = {
     content: any,
 }
 
-export const DeclBlock: React.FC<Props> = ({
+export const DeclareBlock: React.FC<Props> = ({
     keys,
     content
 }) => {
@@ -23,25 +23,25 @@ export const DeclBlock: React.FC<Props> = ({
                     switch (value.type) {
                         case "function": {
                             return (
-                                <View style={styles.obj}>
+                                <View key={key.toString()} style={styles.obj}>
                                     <NameBlock text={value.name} keys={[...keys, key]}/>
-                                    <FuncBlock content={value.content} keys={[...keys, key]}/>
+                                    <FunctionBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <View style={styles.obj}>
+                                <View key={key.toString()} style={styles.obj}>
                                     <NameBlock text={value.name} keys={[...keys, key]}/>
-                                    <DeclBlock content={value.content} keys={[...keys, key]}/>
+                                    <DeclareBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <InpBlock keys={[...keys, key]} value={value.value}/>
+                                <InputBlock key={key.toString()} keys={[...keys, key]} value={value.value}/>
                             )
                         }
                     }

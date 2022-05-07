@@ -1,13 +1,14 @@
 import React  from "react";
 import { View } from "react-native";
 import { useTheme, makeStyles } from '@rneui/themed';
-import { FuncBlock } from "./FuncBlock";
-import { DeclBlock } from "./DeclBlock";
+import { FunctionBlock } from "./FunctionBlock";
+import { DeclareBlock } from "./DeclareBlock";
 import { NameBlock } from "./NameBlock";
 import state from '../Data/blocksState';
 
 export const RenderObj: React.FC = () => {
     const data = state;
+
     const { theme } = useTheme();
     const styles = useStyles(theme);
     
@@ -18,18 +19,18 @@ export const RenderObj: React.FC = () => {
                     switch (value.type) {
                         case "function": {
                             return (
-                                <View style={styles.obj}>
+                                <View key={key.toString()} style={styles.obj}>
                                     <NameBlock text={value.name} keys={[key]}/>
-                                    <FuncBlock content={value.content} keys={[key]}/>
+                                    <FunctionBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <View style={styles.obj}>
+                                <View key={key.toString()} style={styles.obj}>
                                     <NameBlock text={value.name} keys={[key]}/>
-                                    <DeclBlock content={value.content} keys={[key]}/>
+                                    <DeclareBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
                         }

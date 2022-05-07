@@ -12,6 +12,7 @@ export const BlocksList: React.FC = () => {
   const [blockValue, setBlockValue] = useState('');
 
   const block: any = blocksState;
+
   const { theme } = useTheme();
   const styles = useStyles(theme);
   
@@ -47,14 +48,12 @@ export const BlocksList: React.FC = () => {
         </TouchableOpacity>
       </View>
       <Modal
-      animationType = {"fade"}
-      transparent={true}
-      visible={isVisible}
-      presentationStyle="pageSheet"
-      onRequestClose={() => {
-      alert('Modal has now been closed.');
-      }}>
-        <View style={{marginTop: '20%', minHeight: '60%', backgroundColor: 'white'}}>
+        animationType = {"fade"}
+        transparent={true}
+        visible={isVisible}
+        presentationStyle="overFullScreen"
+      >
+        <View style={styles.modal}>
           <View style={styles.blocksSelectView}>
             <TouchableOpacity style={styles.selectionBlock} onPress={() => setBlockType('function')}>
               <Text style={styles.selectionText}>Function</Text>
@@ -70,7 +69,7 @@ export const BlocksList: React.FC = () => {
           }}/>
           <Button 
             title="Close Modal" 
-            onPress={() => {setBlockType(''); setVisible(!isVisible);}}  
+            onPress={() => {setBlockType(''); setBlockName(''); setBlockValue(''); setVisible(!isVisible);}}  
             icon={{name: "close", type: 'antdesign'}}
             buttonStyle={styles.closeButton}
             iconRight={true}
@@ -103,8 +102,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between'
   },
 
-  button: {
-    backgroundColor: 'lightblue',
+  modal: {
+    padding: 20,
+    marginTop: '20%',
+    minHeight: '60%',
+    backgroundColor: theme.colors?.background
   },
 
   text: {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { TextInput, View} from "react-native";
 import { makeStyles, useTheme } from '@rneui/themed';
 import { StateAPI } from '../DataController/blockStateAPI';
@@ -8,11 +8,12 @@ export type Props = {
     keys: Array<number | string>;
 }
 
-export const InpBlock: React.FC<Props> = ({
+export const InputBlock: React.FC<Props> = ({
     value,
     keys
 }) => {
     const [inputValue, setInputValue] = useState(value);
+    
     const { theme } = useTheme();
     const styles = useStyles(theme);
 

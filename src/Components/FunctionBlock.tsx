@@ -1,16 +1,16 @@
 import React from 'react';
-import { View} from "react-native";
+import { View } from "react-native";
 import { useTheme, makeStyles } from '@rneui/themed';
 import { NameBlock } from './NameBlock';
-import { DeclBlock } from "./DeclBlock";
-import { InpBlock } from './InpBlock';
+import { DeclareBlock } from "./DeclareBlock";
+import { InputBlock } from './InputBlock';
 
 export type Props = {
     content: Object;
     keys: Array<number | string>;
 }
 
-export const FuncBlock: React.FC<Props> = ({
+export const FunctionBlock: React.FC<Props> = ({
     content,
     keys
 }) => {
@@ -23,32 +23,30 @@ export const FuncBlock: React.FC<Props> = ({
                     switch (value.type) {
                         case "function": {
                             return (
-                                <View style={styles.funcObj}>
+                                <View key={key.toString()} style={styles.funcObj}>
                                     <NameBlock text={value.name} keys={[...keys, key]}/>
-                                    <FuncBlock content={value.content} keys={[...keys, key]}/>
+                                    <FunctionBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <View style={styles.funcObj}>
+                                <View key={key.toString()} style={styles.funcObj}>
                                     <NameBlock text={value.name} keys={[...keys, key]}/>
-                                    <DeclBlock content={value.content} keys={[...keys, key]}/>
+                                    <DeclareBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <InpBlock keys={[...keys, key]} value={value.value}/>
+                                <InputBlock key={key.toString()} keys={[...keys, key]} value={value.value}/>
                             )
                         }
-
-                        default: {
-                            return;
-                        }
                     }
+
+                    return;
                 })
             }
         </View>
