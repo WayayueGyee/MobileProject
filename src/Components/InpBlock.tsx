@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { TextInput, View} from "react-native";
-import { StateAPI } from '../DataController/blockStateAPI';
 import { makeStyles, useTheme } from '@rneui/themed';
+import { StateAPI } from '../DataController/blockStateAPI';
 
 export type Props = {
     value: string | undefined;

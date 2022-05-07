@@ -1,9 +1,9 @@
 import React from 'react';
 import { View} from "react-native";
-import { DeclBlock } from "./DeclBlock";
-import { InpBlock } from './InpBlock';
 import { useTheme, makeStyles } from '@rneui/themed';
 import { NameBlock } from './NameBlock';
+import { DeclBlock } from "./DeclBlock";
+import { InpBlock } from './InpBlock';
 
 export type Props = {
     content: Object;

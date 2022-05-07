@@ -1,9 +1,9 @@
 import React  from "react";
 import { View } from "react-native";
+import { useTheme, makeStyles } from '@rneui/themed';
 import { FuncBlock } from "./FuncBlock";
 import { DeclBlock } from "./DeclBlock";
 import { NameBlock } from "./NameBlock";
-import { useTheme, makeStyles } from '@rneui/themed';
 import state from '../Data/blocksState';
 
 export const RenderObj: React.FC = () => {

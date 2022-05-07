@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from "react-native";
-import {FuncBlock} from "./FuncBlock";
-import {InpBlock} from "./InpBlock";
 import { useTheme, makeStyles } from '@rneui/themed';
+import { FuncBlock } from "./FuncBlock";
+import { InpBlock } from "./InpBlock";
 import { NameBlock } from './NameBlock';
 
 export type Props = {
