@@ -5,7 +5,7 @@
                 {
                     "type": "declare", "name": "qqqqq",
                     "content": [
-                        { "type": "expression", "value": "foo() + 'QWE'" }
+                        { "type": "expression", "value": "foo()" }
                     ]
                 },
                 {

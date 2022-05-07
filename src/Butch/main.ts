@@ -42,7 +42,7 @@ readButchCodesSetAssets()
     .then(_codes => {
         codes = _codes;
         builder = new Butch.ButchBuilder(codes);
-        manualTest();
+        testBchFile();
     })
 
     

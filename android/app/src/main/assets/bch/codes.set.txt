@@ -13,3 +13,6 @@ expression
 return
 break
 log
+while
+for
+if
