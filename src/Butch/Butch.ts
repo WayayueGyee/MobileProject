@@ -6,6 +6,9 @@ import {
     InvokeBlock, 
     ReturnBlock, 
     TextBlock, 
+    IfBlock,
+    WhileBlock,
+    ForBlock,
     _dereferenceBlock, __consolelog 
 } from "./blocks";
 import ExpressionBlock from "./ExpressionBlock"
@@ -97,7 +100,8 @@ export class ButchBuilder
             [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
             [this.c.return, info => new ReturnBlock(info.obj.extension .builtContent[0])],
-            [this.c.log, info => new __consolelog(info.obj.extension .builtContent[0])]
+            [this.c.log, info => new __consolelog(info.obj.extension .builtContent[0])],
+            // [this.c.if, info => new IfBlock(info.obj.)]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();
@@ -154,8 +158,23 @@ export class ButchBuilder
         return new DeclareBlock(info.obj.get("name"), info.obj.extension .builtContent[0]);
     }
 
+    private buildIf = (info: BlockInfo): IfBlock => {
+        const content = info.obj.extension.buildContent;
+        return new IfBlock(content[0], content[1], content[2]);
+    }
+
+    private buildWhile = (info: BlockInfo): WhileBlock => {
+        const content = info.obj.extension.buildContent;
+        return new WhileBlock(content[0], content[1]);
+    }
+
+    private buildFor = (info: BlockInfo): ForBlock => {
+        const content = info.obj.extension.buildContent;
+        return new ForBlock(content[0], content[1], content[2]);
+    }
+
     private buildInvoker: Builder = (info: BlockInfo): Block => {
-        return new InvokeBlock(info.obj.get("name"), info.obj.extension .builtContent);
+        return new InvokeBlock(info.obj.get("name"), info.obj.extension.builtContent);
     }
 
     private buildFunction = (info: BlockInfo): FuncBlock => {
