@@ -3,6 +3,7 @@ import { FlatList, View, Text, TouchableOpacity } from "react-native";
 import blocksState from "../Data/blocksState"; 
 import {RenderObj} from "./RenderObj";
 import { useTheme, makeStyles } from '@rneui/themed';
+import { HeaderMenu } from "./HeaderMenu";
 
 export const BlocksList: React.FC = () => {
   const [show, setShow] = useState(false);
@@ -27,10 +28,7 @@ export const BlocksList: React.FC = () => {
 
   return (
     <View style={styles.commonView}>
-      <View style={styles.view}>
-        <TouchableOpacity onPress={() => setShow(!show)}>
-          <Text>menu</Text>
-        </TouchableOpacity>
+        <HeaderMenu/>
         {show &&
           <FlatList
             data={[
@@ -46,7 +44,6 @@ export const BlocksList: React.FC = () => {
             }
           />
         }
-      </View>
       {state}
     </View>
   )
@@ -55,10 +52,6 @@ export const BlocksList: React.FC = () => {
 const useStyles = makeStyles((theme) => ({
   commonView: {
     backgroundColor: theme.colors?.grey0
-  },
-
-  view: {
-    width: '30%'
   },
 
   renderView: {
