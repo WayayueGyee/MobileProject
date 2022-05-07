@@ -1,11 +1,56 @@
+// module.exports = {
+//   presets: [
+//     "module:metro-react-native-babel-preset",
+//     [
+//       "@babel/preset-env",
+//       {
+//         shippedProposals: true,
+//       },
+//     ],
+//   ],
+// };
+
 module.exports = {
-  presets: [
-    "module:metro-react-native-babel-preset",
+  presets: ["module:metro-react-native-babel-preset"],
+  plugins: [
+    "react-require",
     [
-      "@babel/preset-env",
+      "module-resolver",
       {
-        shippedProposals: true,
+        root: ["./src", "./assets"],
+        alias: {
+          app: "./src",
+          assets: "./assets",
+        },
       },
     ],
+    [
+      "babel-plugin-require-context-polyfill",
+      {
+        alias: {
+          app: "./src",
+        },
+      },
+    ],
+
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-proposal-export-namespace-from",
+
+    "@babel/plugin-transform-flow-strip-types",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        legacy: true,
+      },
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        loose: false,
+      },
+    ],
+
+    ["@babel/plugin-transform-runtime", {}],
   ],
+  sourceMaps: true,
 };

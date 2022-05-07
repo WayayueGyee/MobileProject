@@ -6,6 +6,8 @@ import {
   PanResponder,
   TouchableWithoutFeedback,
 } from "react-native";
+
+// import { DroppablesDataContext } from "./DroppablesData";
 // import AnimatedTouchable from "./AnimatedTouchable";
 
 // const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -16,6 +18,7 @@ class Draggable extends React.Component {
   #inputRange;
   #outputRange;
   #margins;
+  #prevValue;
 
   constructor(props) {
     super(props);
@@ -43,24 +46,22 @@ class Draggable extends React.Component {
     });
 
     this.pan = new Animated.ValueXY(0);
+    this.#prevValue = { x: this.pan.x._value, y: this.pan.y._value };
     this.panResponder = this.createPanResponders();
   }
 
   createPanResponders() {
     return PanResponder.create({
       onMoveShouldSetPanResponder: () =>
-        this.state.isPicked || (!this.state.isAnimating && this.state.isDragging),
+        !this.state.isAnimating && (this.state.isDragging || this.state.isPicked),
 
       onPanResponderGrant: () => {
-        /*
-         * We can either lock dragging of the element during the animation or
-         * set element value to (0, 0) on start dragging event
-         */
-        // this.pan.setValue({ x: 0, y: 0 });
+        console.log(this.pan.x._value, this.pan.y._value);
         this.pan.setOffset({
           x: this.pan.x._value,
           y: this.pan.y._value,
         });
+        this.pan.setValue({ x: 0, y: 0 });
 
         this.setState(
           { ...this.state, isDragging: true, isPicked: false },
@@ -70,32 +71,45 @@ class Draggable extends React.Component {
         );
       },
 
-      onPanResponderMove: (_, gestures) => {
+      onPanResponderMove: (_, gesture) => {
         this.pan.setValue({
-          x: gestures.dx,
-          y: gestures.dy,
+          x: gesture.dx,
+          y: gesture.dy,
         });
       },
 
-      onPanResponderRelease: () => {
-        this.setState(
-          { ...this.state, isAnimating: true, isDragging: false },
-          function () {
-            console.log("Released: ", this.state);
-          },
-        );
-
-        // TODO: think about promises to animate using end animation callback
-        Animated.spring(this.pan, {
-          toValue: { x: 0, y: 0 },
-          friction: ANIMATION_FRICTION,
-          useNativeDriver: true,
-        }).start(({}) => {
-          this.pan.setValue({ x: 0, y: 0 });
-          this.setState({ ...this.state, isAnimating: false }, function () {
-            console.log("Animated: ", this.state);
+      // Maybe move this code to onTouchEnd
+      onPanResponderRelease: (_, gestures) => {
+        if (gestures.moveY < 400) {
+          this.setState(
+            { ...this.state, isDragging: false, isAnimating: true },
+            function () {
+              console.log("Released: ", this.state);
+            },
+          );
+          // TODO: think about promises to animate using end animation callback
+          // Проблема в анимации
+          Animated.spring(this.pan, {
+            toValue: { x: 0, y: 0 },
+            friction: ANIMATION_FRICTION,
+            tension: 20,
+            useNativeDriver: true,
+          }).start(({}) => {
+            console.log(this.pan.x._value, this.pan.y._value);
+            this.pan.setValue({ x: 0, y: 0 });
+            this.pan.flattenOffset();
+            this.setState(
+              { ...this.state, zIndex: 1, isAnimating: false },
+              function () {
+                console.log("Animated: ", this.state);
+              },
+            );
           });
-        });
+        } else {
+          this.pan.flattenOffset();
+          this.#prevValue = { x: this.pan.x._value, y: this.pan.y._value };
+          this.setState({ ...this.state, isDragging: false });
+        }
       },
     });
   }
@@ -130,11 +144,7 @@ class Draggable extends React.Component {
       duration: this.props.delayLongPress,
       friction: ANIMATION_FRICTION,
       useNativeDriver: true,
-    }).start(({}) => {
-      this.setState({ ...this.state, zIndex: 1, isDragging: false }, function () {
-        console.log("onTouchEnd: ", this.state);
-      });
-    });
+    }).start();
   }
 
   render() {
@@ -149,7 +159,7 @@ class Draggable extends React.Component {
             ],
             borderRadius: 10,
             overflow: "hidden",
-            zIndex: this.state.zIndex,
+            zIndex: this.state.isAnimating || this.state.isDragging ? 100 : 1,
           },
           this.createMargins(this.props.style),
         ]}
@@ -186,6 +196,7 @@ Draggable.propTypes = {
   children: PropTypes.any,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   delayLongPress: PropTypes.number,
+  droppables: PropTypes.array,
 };
 
 export default Draggable;
