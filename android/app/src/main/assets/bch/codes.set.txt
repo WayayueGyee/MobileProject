@@ -16,3 +16,6 @@ log
 while
 for
 if
+container
+set
+print

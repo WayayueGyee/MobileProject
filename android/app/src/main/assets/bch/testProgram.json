@@ -3,24 +3,58 @@
             "type": "function", "name": "main",
             "content": [
                 {
-                    "type": "declare", "name": "qqqqq",
+                    "type": "declare", "name": "i",
                     "content": [
-                        { "type": "expression", "value": "foo()" }
+                        { "type": "expression", "value": "0" }
+                    ]
+                },
+                { "type": "print", "content": 
+                    [ {"type": "deref", "name": "i" } ]},
+                {
+                    "type": "while", "content": [
+                        { "type": "expression", "value": "i < 100" },
+                        { "type": "container", "content": [
+                            { "type": "set", "content": [
+                                { "type": "expression", "value": "i" },
+                                { "type": "expression", "value": "i + 1" }
+                            ]},
+                            { "type": "print", "content": 
+                                    [ {"type": "deref", "name": "i" } ]}
+                        ]}
                     ]
                 },
                 {
-                    "type": "log", "content": 
-                        [ {"type": "deref", "name": "qqqqq" } ] 
-                }
+                    "type": "if", "content": [
+                        { "type": "expression", "value": "i >= 100"},
+                        { "type": "print", "content": 
+                            [ {"type": "text", "value": "expression_is_true" } ]},
+                        { "type": "print", "content": 
+                            [ {"type": "text", "value": "expression_is_false" } ]}  
+                    ] 
+                },
+                { "type": "print", "content": 
+                    [ {"type": "expression", "value": "foo(12)" } ]},
+                {
+                    "type": "for", "content": [
+                        { "type": "declare", "name": "i", "content": 
+                            [{ "type": "expression", "value": "0" }] },
+                        { "type": "expression", "value":"i < 10" },
+                        { "type": "expression", "value": "i = i + 1" },
+                        { "type": "print", "content": 
+                            [{ "type": "expression", "value": "'index:_' + i + '_from_ForBlock'" }] }
+                    ]
+                }  
             ]
         },
         {
-            "type": "function", "name": "foo", "nameSeq": [],
-            "content": [{
-                "type": "return", "content": [{
-                    "type": "expression", "value": "'texttexttexttexttexttexttexttext'"
-                }]
-            }]
+            "type": "function", "name": "foo", "nameSeq": ["a"],
+            "content": [
+                {
+                    "type": "return", "content": [{
+                        "type": "expression", "value": "a * 2"
+                    }]
+                }
+            ]
         }
     ]
 }

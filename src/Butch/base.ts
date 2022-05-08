@@ -210,7 +210,7 @@ export abstract class ScopeBlock extends Block
     }
 } 
 
-export abstract class ContainerBlock extends ScopeBlock
+export class ContainerBlock extends ScopeBlock
 {
     protected containerIndexes: number[];
 

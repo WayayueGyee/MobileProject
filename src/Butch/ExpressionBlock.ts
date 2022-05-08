@@ -207,11 +207,17 @@ export default class ExpressionBlock extends Block
             
             let curSt = "";
             // reading  operand
-            while (/\w|["']/.test(nst[i]) && i < nst.length) {
-                curSt += nst[i++];
+            for (; i < nst.length && (/\w|["']/.test(nst[i]) 
+                || curSt[0] === "'" || curSt[0] === '"'); ++i) 
+            {
+                curSt += nst[i];
+                if (curSt.length > 1 && (nst[i] === "'" && curSt[0] === "'" 
+                    || nst[i] === '"' && curSt[0] === '"')) {
+                        ++i;
+                        break;
+                    }
             }
             if (curSt) {
-                
                 result.push(parseIdentifier(env, curSt));
                 curSt = "", prefix = "";
             } 

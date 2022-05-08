@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { TextInput, View} from "react-native";
 import { StateAPI } from '../DataController/blockStateAPI';
 import { makeStyles, useTheme } from '@rneui/themed';

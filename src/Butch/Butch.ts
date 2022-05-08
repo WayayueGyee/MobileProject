@@ -1,4 +1,4 @@
-import { Block, Environment, Value, TypeNames } from "./base"
+import { Block, Environment, Value, TypeNames, ContainerBlock } from "./base"
 import { 
     FuncBlock, 
     BreakBlock, 
@@ -9,7 +9,8 @@ import {
     IfBlock,
     WhileBlock,
     ForBlock,
-    _dereferenceBlock, __consolelog 
+    PrintBlock,
+    _dereferenceBlock, __consolelog, SetBlock 
 } from "./blocks";
 import ExpressionBlock from "./ExpressionBlock"
 import { RuntimeError, CompilationError } from "./errors"; 
@@ -18,6 +19,7 @@ import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch"
 import ButchObj from "./ButchObj";
 
 import * as rnfs from "react-native-fs"
+import { v4 } from "uuid";
 
 export class Program extends Block
 {
@@ -84,6 +86,7 @@ export class ButchBuilder
     private builders: Map<string, Builder>;
     private exBuilders: Map<string, ExBuilder>;
     private middlewares: Middleware[];
+    private streams: { id: string, write: Function }[] = [];
 
     constructor(codes: {[key: string]: string}) {
         this.c = codes;
@@ -93,15 +96,20 @@ export class ButchBuilder
             [this.c.invoker, this.buildInvoker],
             [this.c.declare, this.buildDeclare],
             [this.c.function, this.buildFunction],
+            [this.c.if, this.buildIf],
+            [this.c.while, this.buildWhile],
+            [this.c.for, this.buildFor],
             
             // style 2 builder : inline anonymos
             [this.c.expression, info => new ExpressionBlock(info.obj.get("value"))],
             [this.c.text, info => new TextBlock(info.obj.get("value"))],
             [this.c.deref, info => new _dereferenceBlock(info.obj.get("name"))],
             [this.c.break, () => BreakBlock],
-            [this.c.return, info => new ReturnBlock(info.obj.extension .builtContent[0])],
-            [this.c.log, info => new __consolelog(info.obj.extension .builtContent[0])],
-            // [this.c.if, info => new IfBlock(info.obj.)]
+            [this.c.return, info => new ReturnBlock(info.obj.extension.builtContent[0])],
+            [this.c.log, info => new __consolelog(info.obj.extension.builtContent[0])],
+            [this.c.print, info => new PrintBlock(info.obj.extension.builtContent[0], this.streams.map(stream => stream.write))],
+            [this.c.set, info => new SetBlock(info.obj.extension.builtContent[0], info.obj.extension.builtContent[1])],
+            [this.c.container, info => new ContainerBlock(info.obj.extension.builtContent)]
         ]);
 
         this.exBuilders = new Map<string, ExBuilder>();
@@ -120,6 +128,20 @@ export class ButchBuilder
 
     useMiddleware(middleware:  Middleware) {
         this.middlewares.push(middleware);
+    }
+
+    useOutStream(stream: { id?: string, write: (str: string ) => void }): string {
+        const existingIndex = this.streams.findIndex(st => st.id === stream.id);
+        
+        if (existingIndex < 0) {
+            const newStream = { id: v4(), write: stream.write };
+            this.streams.push(newStream);
+            return newStream.id;
+        } 
+        
+        this.streams[existingIndex] = { id: stream.id ?? v4(), write: stream.write } ;
+        return this.streams[existingIndex].id;
+        
     }
 
     saveButchCodes(newName: string | undefined = undefined) {
@@ -159,18 +181,18 @@ export class ButchBuilder
     }
 
     private buildIf = (info: BlockInfo): IfBlock => {
-        const content = info.obj.extension.buildContent;
+        const content = info.obj.extension.builtContent;
         return new IfBlock(content[0], content[1], content[2]);
     }
 
     private buildWhile = (info: BlockInfo): WhileBlock => {
-        const content = info.obj.extension.buildContent;
+        const content = info.obj.extension.builtContent;
         return new WhileBlock(content[0], content[1]);
     }
 
     private buildFor = (info: BlockInfo): ForBlock => {
-        const content = info.obj.extension.buildContent;
-        return new ForBlock(content[0], content[1], content[2]);
+        const content = info.obj.extension.builtContent;
+        return new ForBlock(content[0], content[1], content[2], content[3]);
     }
 
     private buildInvoker: Builder = (info: BlockInfo): Block => {

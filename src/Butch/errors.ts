@@ -8,7 +8,7 @@ export class RuntimeError extends Error
 
     constructor(where: Block, message: string) {
         super(message);
-        this.stack = ""; // comment this to see normal error call stack
+        // this.stack = ""; // comment this to see normal error call stack
         this.logBlockLocation(where);
     }
 

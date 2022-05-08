@@ -1,5 +1,5 @@
 import React  from "react";
-import {StyleSheet, TextInput, View} from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { FuncBlock } from "./FuncBlock";
 import { DeclBlock } from "./DeclBlock";
 import { Input, Icon, useTheme } from '@rneui/themed';
@@ -14,7 +14,7 @@ export const RenderObj: React.FC = () => {
             {
                 Object.entries(data).map(([key, value]: [key: string | number, value: any]) => {
                     switch (value.type) {
-                        case "function": {
+                        case "function": 
                             return (
                                 <View style={styles.obj}>
                                     <Input
@@ -31,16 +31,14 @@ export const RenderObj: React.FC = () => {
                                     <FuncBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
-                        }
 
-                        case "declare": {
+                        case "declare": 
                             return (
                                 <View style={styles.obj}>
                                     <TextInput style={styles.input} value={value.name}/>
                                     <DeclBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
-                        }
                     }
 
                     return;
