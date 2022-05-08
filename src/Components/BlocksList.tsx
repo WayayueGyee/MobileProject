@@ -1,68 +1,135 @@
-import React, { useState } from "react";
-import { StyleSheet, FlatList, View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Modal, View, Text, TouchableOpacity, TextInput } from "react-native";
+import { useTheme, makeStyles, Icon, Button } from '@rneui/themed';
 import blocksState from "../Data/blocksState"; 
-import {RenderObj} from "./RenderObj";
+import { RenderObj } from "./RenderObj";
 
 export const BlocksList: React.FC = () => {
-  const [show, setShow] = useState(false);
-  const [state, setState] = useState(<RenderObj/>);
+  const [isVisible, setVisible] = useState(false);
+
+  const [blockType, setBlockType] = useState('');
+  const [blockName, setBlockName] = useState('');
+  const [blockValue, setBlockValue] = useState('');
+
   const block: any = blocksState;
+
+  const { theme } = useTheme();
+  const styles = useStyles(theme);
   
-  const onPressEvent = (id: number | string, type: string) => {
-    block[id] = {
-      type: type,
-      name: '123',
+  const onPressEvent = (content: {id: number | string, type: string, name: string, value: string}) => {
+    block[content.id] = {
+      type: content.type,
+      name: content.name,
       content: {
         1: {
-          type: 'text', value: '123'
+          type: 'text', value: content.value
         }
       }
     }
-
-    setState(<RenderObj/>);
   }
 
+  useEffect(() => {
+    setBlockName('');
+    setBlockValue('');
+    console.log(block);
+  }, [block])
+
   return (
-    <View>
-      <View style={styles.view}>
-        <TouchableOpacity onPress={() => setShow(!show)}>
-          <Text>menu</Text>
-        </TouchableOpacity>
-        {show &&
-          <FlatList
-            data={[
-              {type: 'declare'},
-              {type: 'operation'},
-              {type: 'function'}
-            ]}
-            renderItem={({item}) => (
-                <TouchableOpacity onPress={() => onPressEvent(Date.now(), item.type)} style={styles.button}>
-                  <Text style={styles.text}>{item.type}</Text>
-                </TouchableOpacity>
-              )
-            }
+    <View style={isVisible ? styles.darkCommonView : styles.commonView}>
+      <View style={styles.menu}>
+        <Text style={styles.text}>Menu</Text>
+        <TouchableOpacity onPress={() => {
+            setVisible(true);
+        }}>
+          <Icon
+              name="add-to-list"
+              type='entypo'
           />
-        }
+        </TouchableOpacity>
       </View>
-      {state}
+      <Modal
+        animationType = {"fade"}
+        transparent={true}
+        visible={isVisible}
+        presentationStyle="overFullScreen"
+      >
+        <View style={styles.modal}>
+          <View style={styles.blocksSelectView}>
+            <TouchableOpacity style={styles.selectionBlock} onPress={() => setBlockType('function')}>
+              <Text style={styles.selectionText}>Function</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.selectionBlock} onPress={() => setBlockType('declare')}>
+              <Text style={styles.selectionText}>Declare</Text>
+            </TouchableOpacity>
+          </View>
+          <TextInput placeholder="name" value={blockName} onChangeText={(text) => setBlockName(text)}/>
+          <TextInput placeholder="value" value={blockValue} onChangeText={(text) => setBlockValue(text)}/>
+          <Button buttonStyle={{backgroundColor: theme.colors?.success}} title="Add" onPress={() => {
+            onPressEvent({id: Date.now(), type: blockType, name: blockName, value: blockValue});
+          }}/>
+          <Button 
+            title="Close Modal" 
+            onPress={() => {setBlockType(''); setBlockName(''); setBlockValue(''); setVisible(!isVisible);}}  
+            icon={{name: "close", type: 'antdesign'}}
+            buttonStyle={styles.closeButton}
+            iconRight={true}
+          />
+        </View>
+      </Modal>
+      <RenderObj/>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  view: {
-    width: '30%'
+const useStyles = makeStyles((theme) => ({
+  commonView: {
+    backgroundColor: theme.colors?.grey0
+  },
+
+  darkCommonView: {
+    opacity: 0.15,
+    backgroundColor: theme.colors?.grey0
   },
 
   renderView: {
     width: '100%'
   },
 
-  button: {
-    backgroundColor: 'lightblue',
+  menu: {
+    backgroundColor: theme.colors?.primary,
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+  modal: {
+    padding: 20,
+    marginTop: '20%',
+    minHeight: '60%',
+    backgroundColor: theme.colors?.background
   },
 
   text: {
     fontSize: 18
+  },
+
+  blocksSelectView: {
+    flexDirection: 'row',
+  },
+
+  selectionBlock: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: theme.colors?.grey4
+  },
+
+  selectionText: {
+    textAlign: 'center',
+    fontSize: 16
+  },
+
+  closeButton: {
+    backgroundColor: '#FF3333'
   }
-})
+}));

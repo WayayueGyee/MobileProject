@@ -1,17 +1,21 @@
 import React from 'react';
-import {StyleSheet, TextInput, View} from "react-native";
-import {FuncBlock} from "./FuncBlock";
-import {InpBlock} from "./InpBlock";
+import { View } from "react-native";
+import { useTheme, makeStyles } from '@rneui/themed';
+import { FunctionBlock } from "./FunctionBlock";
+import { InputBlock } from "./InputBlock";
+import { NameBlock } from './NameBlock';
 
 export type Props = {
     keys: Array<number | string>,
     content: any,
 }
 
-export const DeclBlock: React.FC<Props> = ({
+export const DeclareBlock: React.FC<Props> = ({
     keys,
     content
 }) => {
+    const theme = useTheme();
+    const styles = useStyles(theme)
     return (
         <View>
             {
@@ -19,25 +23,25 @@ export const DeclBlock: React.FC<Props> = ({
                     switch (value.type) {
                         case "function": {
                             return (
-                                <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
-                                    <FuncBlock content={value.content} keys={[...keys, key]}/>
+                                <View key={key.toString()} style={styles.obj}>
+                                    <NameBlock text={value.name} keys={[...keys, key]}/>
+                                    <FunctionBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "declare": {
                             return (
-                                <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock content={value.content} keys={[...keys, key]}/>
+                                <View key={key.toString()} style={styles.obj}>
+                                    <NameBlock text={value.name} keys={[...keys, key]}/>
+                                    <DeclareBlock content={value.content} keys={[...keys, key]}/>
                                 </View>
                             )
                         }
 
                         case "text": {
                             return (
-                                <InpBlock keys={[...keys, key]} value={value.value}/>
+                                <InputBlock key={key.toString()} keys={[...keys, key]} value={value.value}/>
                             )
                         }
                     }
@@ -49,9 +53,9 @@ export const DeclBlock: React.FC<Props> = ({
     )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
     obj: {
-        backgroundColor: 'black',
+        backgroundColor: theme.colors?.grey5,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -65,11 +69,11 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        backgroundColor: 'white',
-        color: 'black',
+        backgroundColor: theme.colors?.warning,
+        color: theme.colors?.white,
         marginLeft: 10,
         marginRight: 10,
         minWidth: 50,
         borderRadius: 10
     }
-})
+}))

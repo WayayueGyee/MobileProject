@@ -1,13 +1,16 @@
 import React  from "react";
-import { StyleSheet, TextInput, View } from "react-native";
-import { FuncBlock } from "./FuncBlock";
-import { DeclBlock } from "./DeclBlock";
-import { Input, Icon, useTheme } from '@rneui/themed';
+import { View } from "react-native";
+import { useTheme, makeStyles } from '@rneui/themed';
+import { FunctionBlock } from "./FunctionBlock";
+import { DeclareBlock } from "./DeclareBlock";
+import { NameBlock } from "./NameBlock";
 import state from '../Data/blocksState';
 
 export const RenderObj: React.FC = () => {
     const data = state;
+
     const { theme } = useTheme();
+    const styles = useStyles(theme);
     
     return (
         <View>
@@ -16,27 +19,17 @@ export const RenderObj: React.FC = () => {
                     switch (value.type) {
                         case "function": 
                             return (
-                                <View style={styles.obj}>
-                                    <Input
-                                        placeholder="name"
-                                        leftIcon={
-                                            <Icon
-                                                name='edit-3'
-                                                type='feather'
-                                                color={theme.colors.primary}
-                                            />
-                                        }
-                                        value={value.name}
-                                        />
-                                    <FuncBlock content={value.content} keys={[key]}/>
+                                <View key={key.toString()} style={styles.obj}>
+                                    <NameBlock text={value.name} keys={[key]}/>
+                                    <FunctionBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
 
                         case "declare": 
                             return (
-                                <View style={styles.obj}>
-                                    <TextInput style={styles.input} value={value.name}/>
-                                    <DeclBlock content={value.content} keys={[key]}/>
+                                <View key={key.toString()} style={styles.obj}>
+                                    <NameBlock text={value.name} keys={[key]}/>
+                                    <DeclareBlock content={value.content} keys={[key]}/>
                                 </View>
                             )
                     }
@@ -48,9 +41,9 @@ export const RenderObj: React.FC = () => {
     )
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
     obj: {
-        backgroundColor: 'grey',
+        backgroundColor: theme.colors?.background,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -63,21 +56,12 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
 
-    button: {
-        backgroundColor: 'lightblue',
-    },
-
-    text: {
-        color: '#000',
-        fontSize: 18
-    },
-
     input: {
-        backgroundColor: 'white',
-        color: 'black',
+        backgroundColor: theme.colors?.warning,
+        color: theme.colors?.white,
         marginLeft: 10,
         marginTop: 10,
         minWidth: 50,
         borderRadius: 10
     }
-})
+}))

@@ -14,7 +14,7 @@ import {
 } from "./blocks";
 import ExpressionBlock from "./ExpressionBlock"
 import { RuntimeError, CompilationError } from "./errors"; 
-import { createButchCodesFile } from "./utils";
+import { createButchCodesFile, readButchCodes, readButchCodesSetAssets,  } from "./utils";
 import { syntaxCheck, prebuildInternalBlocks } from "./middleware.bch"
 import ButchObj from "./ButchObj";
 
@@ -251,6 +251,13 @@ export class ButchBuilder
 
     getCodes(): {[key: string]: string} {
         return {...this.c};
+    }
+
+    public static initDefaultBuilder() {
+        return readButchCodesSetAssets()
+            .then(set => createButchCodesFile(set))
+            .then(() => readButchCodes())
+            .then(_codes => new ButchBuilder(_codes))
     }
 }
 

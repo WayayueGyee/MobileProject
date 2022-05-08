@@ -1,28 +1,28 @@
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { BlocksList } from './Components/BlocksList';
-import { initDefaultBuilder, testBchFile } from "./Butch/main"
+import { testBchFile } from "./Butch/main"
+import { ButchBuilder } from "./Butch/Butch";
 import Console from "./Components/Console";
 
-const App: React.FC = () => {
-  const [ consoleComp, setConsole ] = useState<any>(undefined);
+export const App: React.FC = () => {
+  const [mainBuilder, setMainBuilder] = useState<ButchBuilder | undefined>(undefined)
 
-  if (!consoleComp) {
-    initDefaultBuilder()
-      .then(builder => {
-        setConsole(<Console builder={builder}/>);
-        testBchFile(builder);
-      });
+  if (!mainBuilder) {
+    ButchBuilder.initDefaultBuilder().then(builder => {
+      setMainBuilder(builder);
+      testBchFile(builder);
+    });
   }
 
   return (
     <ScrollView>
       <>
-        { consoleComp }
+        {
+          mainBuilder ? <Console builder={mainBuilder}/> : undefined
+        }
         <BlocksList/>
       </>
     </ScrollView>
   )
-};
-
-export default App;
+}
