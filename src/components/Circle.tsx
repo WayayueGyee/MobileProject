@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 
 import Draggable from "./Draggable";
 
-function Circle(props) {
-  return <Draggable></Draggable>;
+function Circle() {
+  return <Draggable style={styles.circle}></Draggable>;
 }
 
 const styles = StyleSheet.create({

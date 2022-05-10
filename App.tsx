@@ -5,14 +5,14 @@
 
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import Task from "./app/components/Task";
-import TasksTitle from "./app/components/TasksTitle";
 
-import Circle from "./app/components/Circle";
-import Colors from "./app/config/colors";
+import Task from "./src/components/Task";
+import TasksTitle from "./src/components/TasksTitle";
+import Circle from "./src/components/Circle";
+import Colors from "./src/config/colors";
 
 const App = () => {
-  const [taskList, setTaskList] = useState([
+  const [taskList] = useState([
     { text: "Implement drag and drop 🤯", id: 1 },
     { text: "Do something cool 😎", id: 2 },
     { text: "This block needs to check blocks collision 🤣", id: 3 },

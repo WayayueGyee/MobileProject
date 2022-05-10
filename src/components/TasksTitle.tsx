@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
 
-function TasksTitle(props) {
+function TasksTitle() {
   return (
     <View style={styles.titleContainer}>
-      <TextInput style={styles.titleInput}>Today's tasks</TextInput>
+      <TextInput style={styles.titleInput}>Today&apos;s tasks</TextInput>
     </View>
   );
 }

@@ -4,10 +4,22 @@ import PropTypes from "prop-types";
 // import { DroppablesDataContext } from "./DroppablesData";
 // import { DroppablesData } from "./DroppablesData";
 
-const useComponentData = () => {
-  const [data, setData] = useState(null);
+declare interface DroppableProps {
+  style?: Array<object> | object;
+  children?: React.ReactNode | undefined;
+}
 
-  onLayout = useCallback(event => {
+type MeasureData = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+} | null;
+
+const useComponentData = () => {
+  const [data, setData] = useState<MeasureData>(null);
+
+  const onLayout = useCallback((event: any) => {
     const { x, y, width, height } = event.nativeEvent.layout;
     setData({ x, y, width, height });
   }, []);
@@ -43,11 +55,11 @@ const useComponentData = () => {
 
 //console.log(obj[0].children[0]);
 
-function Droppable(props) {
+function Droppable({ style, children }: DroppableProps) {
   const reference = useRef(null);
 
   const logPropsChildrens = () => {
-    console.log({ ...props.children[0] });
+    console.log();
   };
 
   const logRef = () => {
@@ -58,12 +70,13 @@ function Droppable(props) {
     // );
 
     // console.log(reference.current);
-    console.log(props.children[0]);
+    console.log(React.Children.toArray(children));
   };
 
   const renderChildren = () => {
-    let newPositions = [];
-    props.children.map(children => {
+    const newPositions: Array<React.ReactNode> = [];
+
+    React.Children.map(children, children => {
       newPositions.push(
         // React.createElement(children.type.displayName, children.props,),
         children,
@@ -76,26 +89,25 @@ function Droppable(props) {
   };
 
   return (
-    <View ref={reference} onTouchStart={logRef} style={props.style}>
+    <View ref={reference} onTouchStart={logRef} style={style}>
       {renderChildren()}
     </View>
   );
 }
 
-Droppable.defaultProps = {
-  style: {
-    justifyContent: "center",
-    alignSelf: "center",
-    padding: 20,
-    backgroundColor: "#f58181",
-    width: 300,
-    height: 200,
-  },
-};
+// Droppable.defaultProps = {
+//   style: {
+//     justifyContent: "center",
+//     alignSelf: "center",
+//     padding: 20,
+//     backgroundColor: "#f58181",
+//     width: 300,
+//     height: 200,
+//   },
+// };
 Droppable.propTypes = {
   children: PropTypes.any,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  droppablesData: PropTypes.array,
 };
 
 export default Droppable;

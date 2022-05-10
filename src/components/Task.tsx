@@ -6,16 +6,18 @@ import Colors from "../config/colors";
 import Draggable from "./Draggable";
 
 const LONG_PRESS_DELAY = 350;
+interface ITaskProps {
+  text: string;
+}
 
-class Task extends React.Component {
-  constructor(props) {
+class Task extends React.Component<ITaskProps> {
+  constructor(props: ITaskProps) {
     super(props);
   }
 
   static get propTypes() {
     return {
       text: PropTypes.string,
-      id: PropTypes.number,
     };
   }
 
