@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-import IStyle from "../types/StyleType";
+import { Children, IStyle } from "../types/Types";
 import useStateCallback from "../hooks/useStateCallback";
 // import { DroppablesDataContext } from "./DroppablesData";
 // import AnimatedTouchable from "./AnimatedTouchable";
@@ -15,7 +15,7 @@ import useStateCallback from "../hooks/useStateCallback";
 const ANIMATION_FRICTION = 8;
 
 interface IDraggableProps {
-  children?: React.ReactNode;
+  children?: Children;
   style?: IStyle;
   delayLongPress?: number;
 }
