@@ -55,3 +55,36 @@ export default class ButchObj
         return new ButchObj(obj, this.codes);
     }
 }
+
+export class CButchObj extends ButchObj
+{
+    public cContent: CButchObj[] | undefined;
+
+    constructor(obj: {[key: string]: any}, codes: {[key: string]: string}) {
+        super(obj, codes);
+
+        this.cContent = super.content()?.map(item => new CButchObj(item, codes));
+    }
+
+    /**
+    * recursive ButchObj finder 
+    */
+    static cGoToNode(obj: CButchObj, path: number[],
+        codes: {[key: string]: string}) : CButchObj | undefined   
+    {
+        let node: any = obj;
+        for (let i = 0; i < path.length; ++i) {
+            if (!(node[codes.content] instanceof Array)) {
+            return undefined;
+            } else {
+                node = node[codes.content][path[i]];
+            } 
+        }
+        return node
+    }
+    
+    goTo(...indexes: number[]): ButchObj {
+        return CButchObj.cGoToNode(this, indexes, this.codes) 
+            ?? (() => { throw new Error("Invalid path to find block") })();
+    }
+}

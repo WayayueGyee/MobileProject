@@ -36,12 +36,14 @@
                     [ {"type": "expression", "value": "foo(12)" } ]},
                 {
                     "type": "for", "content": [
-                        { "type": "declare", "name": "i", "content": 
-                            [{ "type": "expression", "value": "0" }] },
+                        { "type": "declare", "name": "i", "content": [
+                            { "type": "expression", "value": "0" }
+                        ]},
                         { "type": "expression", "value":"i < 10" },
                         { "type": "expression", "value": "i = i + 1" },
-                        { "type": "print", "content": 
-                            [{ "type": "expression", "value": "'index:_' + i + '_from_ForBlock'" }] }
+                        { "type": "print", "content": [
+                            { "type": "expression", "value": "'index:_' + i + '_from_ForBlock'" }
+                        ]}
                     ]
                 }  
             ]
