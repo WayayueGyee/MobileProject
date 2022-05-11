@@ -36,4 +36,23 @@ Sequence of "name" tags
      
     "break" - empty
 
+    "if"
+"content"[0]: block representing conditional expression
+"content"[1]: block to execute if expression is true
+"content"[2]?: block to execute if expression is false
+
+    "while"
+"content"[0]: block representing conditional expression
+"content"[1]: block to execute while expression is true
+
+    "for"
+"content"[0]: init block 
+"content"[1]: block representing conditional expression
+"content"[2]: block after body execution
+"content"[3]: block to execute while expression is true
+
+    "print"
+"content"[0]: block, which value will be printed 
+
+
 This scheme allows navigate through program using array of indexes  
