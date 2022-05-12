@@ -2,13 +2,12 @@ import blockState from '../Data/blocksState'
 
 class StateAPI {
     static changeName(keys: Array<string | number>, newName: string | number | boolean  | null, state=blockState) {
-        if (keys.length === 0) return;
+        if (!keys.length) return;
 
         let k = keys.shift();
         Object.entries(state).map(([key, value]: [string | number, any]) => {
             if (key === k) {
-                if (keys.length === 0) {
-                    alert(value.name)
+                if (!keys.length) {
                     value.name = newName;
                 }
 
@@ -18,13 +17,12 @@ class StateAPI {
     }
 
     static changeValue(keys: Array<string | number>, newValue: string | number | boolean  | null, state=blockState) {
-        if (keys.length === 0) return;
+        if (!keys.length) return;
 
         let k = keys.shift();
         Object.entries(state).map(([key, value]: [string | number, any]) => {
             if (key === k) {
-                if (keys.length === 0) {
-                    alert(value.value)
+                if (!keys.length) {
                     value.value = newValue;
                 }
 

@@ -1,7 +1,7 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { TextInput } from "react-native";
-import { StateAPI } from '../DataController/blockStateAPI';
 import { makeStyles, useTheme } from '@rneui/themed';
+import { StateAPI } from '../DataController/blockStateAPI';
 
 export type Props = {
     text: string | undefined;
@@ -13,12 +13,13 @@ export const NameBlock: React.FC<Props> = ({
     keys
 }) => {
     const [inputValue, setInputValue] = useState(text);
+    
     const { theme } = useTheme();
     const styles = useStyles(theme);
 
     const changeText = (text: string) => {
         setInputValue(text);
-        let keysCopy = [...keys];
+        const keysCopy = [...keys];
         StateAPI.changeName(keysCopy, text);
     }
 
