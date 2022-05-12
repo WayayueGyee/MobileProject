@@ -60,7 +60,7 @@ const ProgramBlocks = {
 function createElementByElementData(elementData: ElementData) {
   return React.createElement(ProgramBlocks[typeof elementData.type]);
 }
-
+// TODO: удалить всё нахуй.
 function DNDElementsProvider({ programData }: DNDElementsProviderProps) {
   return (
     <DNDElementsContext.Provider value={programData}>
